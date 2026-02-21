@@ -1,0 +1,481 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-02-16T17:30:18.000Z",
+    "createdAt": "2026-02-16T17:30:16.450Z",
+    "versionId": "40141149-994b-4ac4-af8a-4e772c772f60",
+    "workflowId": "nEzJiYRTsfIgGdUkut3b5",
+    "nodes": [
+      {
+        "parameters": {
+          "options": {
+            "allowFileUploads": true
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          -512,
+          -128
+        ],
+        "id": "7c722e4f-97be-426a-bbbc-32f1c47c49ab",
+        "name": "When chat message received",
+        "webhookId": "5a5ed2b9-9a6b-4d65-b56e-659290309733"
+      },
+      {
+        "parameters": {
+          "binaryPropertyName": "data0",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          -336,
+          -128
+        ],
+        "id": "044fddac-443f-44b0-8306-d064658c3b96",
+        "name": "Extract from File"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// CAMBIO AQUÍ: Usamos $json.output porque así viene de tu agente\nlet rawText = $json.output;\n\ntry {\n  // Validación de seguridad: Si rawText viene vacío, lanzamos error manual\n  if (!rawText) {\n    throw new Error(\"El campo 'output' no existe en la entrada\");\n  }\n\n  // 1. Eliminamos los bloques de código de markdown (```json o ```) \n  // y cualquier espacio en blanco al inicio o final\n  const cleanText = rawText.replace(/```json|```/g, \"\").trim();\n\n  // 2. Intentamos convertir el texto limpio a objeto JSON\n  const parsedData = JSON.parse(cleanText);\n\n  // Devolvemos el objeto limpio\n  return parsedData;\n\n} catch (error) {\n  // Manejo de errores detallado\n  return {\n    json: {\n      error: \"No se pudo extraer un JSON válido\",\n      mensaje_error: error.message,\n      texto_recibido: rawText // Para que veas qué intentó procesar\n    }\n  };\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          144,
+          -128
+        ],
+        "id": "327b0baa-2950-4eda-aade-3e32cc3c0c64",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "resource": "draft",
+          "subject": "={{ $json.asunto }}",
+          "emailType": "html",
+          "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n{{ $json.asunto }}              \n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                {{ $json.cuerpo }}\n                \n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 315 093 3000</p>\n<a href=\\\"mailto:soporte@akienvio.co\\\">soporte@akienvio.co</a>\n                <p class=\"sig-role\">Sección de Operaciones - División de PQRS</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>\n",
+          "options": {
+            "sendTo": "={{ $json.para }}"
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          304,
+          -128
+        ],
+        "id": "38e6eb79-1b2c-4d02-8790-6db83ff0fc36",
+        "name": "Create a draft",
+        "webhookId": "3a8b2a65-a47d-45fa-b0ec-9bc0b1860e63",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "E6A3o0KS4UfkMlS3",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json['﻿paqueteria;guia;tipoPQR;tipoDeRadicacion;correo;descrpcionPaquete;ultimoMovimiento;contextoPQR;anexos;enviado'] }}",
+          "options": {
+            "systemMessage": "# PERSONA\nEspecialista en PQR de Akienvio SAS. Tu tarea es convertir una línea de datos CSV en un JSON de correo formal, extiende la redaccion de la PQR y utiliza un tono formal, juridico, sin inverntar hechos y concervando la informacion original del cvs en cuanto detalles de numero de guia y fechas\n\n# REGLAS DE FORMATO\n- **Entrada:** Recibirás los datos en formato CSV (Cabecera + Fila).\n- **Salida:** Responde ÚNICAMENTE con un objeto JSON estructurado: {\"para\": \"...\", \"asunto\": \"...\", \"cuerpo\": \"...\", \"guia\": \"...\"}.\n- ** No es necesario la inclusion de firma al final del \"cuerpo\" dado que se usa una plantilla para el envio del correo que ya la incluye\n\n# INSTRUCCIONES DE FORMATO HTML\n- El campo \"cuerpo\" debe ser redactado en formato HTML.\n- Usa la etiqueta `<p>` para párrafos y `<br>` para saltos de línea sencillos.\n- Usa `<strong>` para resaltar datos clave (número de guía, fechas, leyes).\n\n\n# MAPEO DE ENTRADA\nUtiliza estos campos del cvs para redactar:\n- `paqueteria`: Nombre de la transportadora (ej. Coordinadora, servientrega). utilizar el que aparezca en el cvs\n- `guia`: Identificador del paquete debe aparecer en el texto de la PQR y no pude ser cambiado o moficicado bajo ninguna condicion.\n- `tipoPQR`: Motivo (ej. guiaRetrasado, guiaMalEntregado).\n- `descrpcionPaquete` & `contextoPQR`: Detalles para el cuerpo del mensaje.\n- `ultimoMovimiento`: Fecha clave para reclamar retrasos.\n- `anexos`: Menciona que se adjuntan pruebas si este campo contiene información.\n\n# EJEMPLOS DE REFERENCIA\n\n## Ejemplo 1 (Retraso)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352524698,guiaRetrasado,jorgeptn@gmail.com,06/02/2026,paquete sin movimiento\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"Agilización de entrega - Guía 75352524698\",\"cuerpo\":\"Equipo Coordinadora,\\n\\nEl paquete 75352524698 presenta retraso desde el 06/02/2026. Solicitamos escalamiento urgente y fecha estimada.\\n\\nAtentamente,\\nSoporte Akienvio\",\"guia\":\"75352524698\"}\n\n## Ejemplo 2 (Legal/Mal Entregado)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352519478,guiaMalEntregado,jorgeptn@gmail.com,06/02/2026,entrega irregular citofono no porteria\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"PQR Entrega Irregular - Guía 75352519478\",\"cuerpo\":\"Señores Coordinadora,\\n\\nAkienvio SAS (NIT 901702784) radica PQR por entrega irregular de la guía 75352519478. El cliente no recibió el paquete. Citamos Art. 25 Ley 1369/2009 y Res. 3038/2011. Exigimos indemnización o entrega correcta.\\n\\nNotificaciones: soporte@akienvio.co\\n\\nAtentamente,\\nAkienvio SAS\",\"guia\":\"75352519478\"}\n\n# TAREA ACTUAL\nProcesa esta línea CSV:\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nGenera las PQR en el formato JSON structurado\n\n# TAREA ACTUAL\nGenera el JSON de la PQR para los siguientes datos extraídos de la fila actual del archivo:\n\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\n\n\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -144,
+          -128
+        ],
+        "id": "862709df-364b-4949-89d0-97f2bc41fe60",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": "deepseek-reasoner",
+          "options": {
+            "temperature": 1
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -208,
+          112
+        ],
+        "id": "e166373b-8d35-4be2-8121-a3afe24c6296",
+        "name": "DeepSeek Chat Model1",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "JOgBNw5EPOWd1rXO",
+            "name": "DeepSeekPQRRadicador"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -64,
+          48
+        ],
+        "id": "04d8f316-000f-49dc-9127-18ac7d0d3ee0",
+        "name": "Simple Memory"
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Create a draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a draft": {
+        "main": [
+          []
+        ]
+      },
+      "DeepSeek Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "jorge Patino",
+    "name": "Version 40141149",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-16T17:30:18.247Z",
+        "id": 29,
+        "workflowId": "nEzJiYRTsfIgGdUkut3b5",
+        "versionId": "40141149-994b-4ac4-af8a-4e772c772f60",
+        "event": "activated",
+        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
+      }
+    ]
+  },
+  "activeVersionId": "40141149-994b-4ac4-af8a-4e772c772f60",
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        []
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-16T02:06:56.992Z",
+  "description": null,
+  "id": "nEzJiYRTsfIgGdUkut3b5",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "radicarPQR",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -512,
+        -128
+      ],
+      "id": "7c722e4f-97be-426a-bbbc-32f1c47c49ab",
+      "name": "When chat message received",
+      "webhookId": "5a5ed2b9-9a6b-4d65-b56e-659290309733"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// CAMBIO AQUÍ: Usamos $json.output porque así viene de tu agente\nlet rawText = $json.output;\n\ntry {\n  // Validación de seguridad: Si rawText viene vacío, lanzamos error manual\n  if (!rawText) {\n    throw new Error(\"El campo 'output' no existe en la entrada\");\n  }\n\n  // 1. Eliminamos los bloques de código de markdown (```json o ```) \n  // y cualquier espacio en blanco al inicio o final\n  const cleanText = rawText.replace(/```json|```/g, \"\").trim();\n\n  // 2. Intentamos convertir el texto limpio a objeto JSON\n  const parsedData = JSON.parse(cleanText);\n\n  // Devolvemos el objeto limpio\n  return parsedData;\n\n} catch (error) {\n  // Manejo de errores detallado\n  return {\n    json: {\n      error: \"No se pudo extraer un JSON válido\",\n      mensaje_error: error.message,\n      texto_recibido: rawText // Para que veas qué intentó procesar\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -128
+      ],
+      "id": "327b0baa-2950-4eda-aade-3e32cc3c0c64",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n{{ $json.asunto }}              \n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                {{ $json.cuerpo }}\n                \n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 315 093 3000</p>\n<a href=\\\"mailto:soporte@akienvio.co\\\">soporte@akienvio.co</a>\n                <p class=\"sig-role\">Sección de Operaciones - División de PQRS</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>\n",
+        "options": {
+          "sendTo": "={{ $json.para }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -128
+      ],
+      "id": "38e6eb79-1b2c-4d02-8790-6db83ff0fc36",
+      "name": "Create a draft",
+      "webhookId": "3a8b2a65-a47d-45fa-b0ec-9bc0b1860e63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E6A3o0KS4UfkMlS3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.files[0] }}",
+        "options": {
+          "systemMessage": "# PERSONA\nEspecialista en PQR de Akienvio SAS. Tu tarea es convertir una línea de datos CSV en un JSON de correo formal, extiende la redaccion de la PQR y utiliza un tono formal, juridico, sin inverntar hechos y concervando la informacion original del cvs en cuanto detalles de numero de guia y fechas\n\n# REGLAS DE FORMATO\n- **Entrada:** Recibirás los datos en formato CSV (Cabecera + Fila).\n- **Salida:** Responde ÚNICAMENTE con un objeto JSON estructurado: {\"para\": \"...\", \"asunto\": \"...\", \"cuerpo\": \"...\", \"guia\": \"...\"}.\n- ** No es necesario la inclusion de firma al final del \"cuerpo\" dado que se usa una plantilla para el envio del correo que ya la incluye\n\n# INSTRUCCIONES DE FORMATO HTML\n- El campo \"cuerpo\" debe ser redactado en formato HTML.\n- Usa la etiqueta `<p>` para párrafos y `<br>` para saltos de línea sencillos.\n- Usa `<strong>` para resaltar datos clave (número de guía, fechas, leyes).\n\n\n# MAPEO DE ENTRADA\nUtiliza estos campos del cvs para redactar:\n- `paqueteria`: Nombre de la transportadora (ej. Coordinadora, servientrega). utilizar el que aparezca en el cvs\n- `guia`: Identificador del paquete debe aparecer en el texto de la PQR y no pude ser cambiado o moficicado bajo ninguna condicion.\n- `tipoPQR`: Motivo (ej. guiaRetrasado, guiaMalEntregado).\n- `descrpcionPaquete` & `contextoPQR`: Detalles para el cuerpo del mensaje.\n- `ultimoMovimiento`: Fecha clave para reclamar retrasos.\n- `anexos`: Menciona que se adjuntan pruebas si este campo contiene información.\n\n# EJEMPLOS DE REFERENCIA\n\n## Ejemplo 1 (Retraso)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352524698,guiaRetrasado,jorgeptn@gmail.com,06/02/2026,paquete sin movimiento\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"Agilización de entrega - Guía 75352524698\",\"cuerpo\":\"Equipo Coordinadora,\\n\\nEl paquete 75352524698 presenta retraso desde el 06/02/2026. Solicitamos escalamiento urgente y fecha estimada.\\n\\nAtentamente,\\nSoporte Akienvio\",\"guia\":\"75352524698\"}\n\n## Ejemplo 2 (Legal/Mal Entregado)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352519478,guiaMalEntregado,jorgeptn@gmail.com,06/02/2026,entrega irregular citofono no porteria\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"PQR Entrega Irregular - Guía 75352519478\",\"cuerpo\":\"Señores Coordinadora,\\n\\nAkienvio SAS (NIT 901702784) radica PQR por entrega irregular de la guía 75352519478. El cliente no recibió el paquete. Citamos Art. 25 Ley 1369/2009 y Res. 3038/2011. Exigimos indemnización o entrega correcta.\\n\\nNotificaciones: soporte@akienvio.co\\n\\nAtentamente,\\nAkienvio SAS\",\"guia\":\"75352519478\"}\n\n# TAREA ACTUAL\nProcesa esta línea CSV:\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nGenera las PQR en el formato JSON structurado\n\n# TAREA ACTUAL\nGenera el JSON de la PQR para los siguientes datos extraídos de la fila actual del archivo:\n\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        -128
+      ],
+      "id": "862709df-364b-4949-89d0-97f2bc41fe60",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {
+          "temperature": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        112
+      ],
+      "id": "e166373b-8d35-4be2-8121-a3afe24c6296",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "JOgBNw5EPOWd1rXO",
+          "name": "DeepSeekPQRRadicador"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        48
+      ],
+      "id": "04d8f316-000f-49dc-9127-18ac7d0d3ee0",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T02:06:57.000Z",
+      "createdAt": "2026-02-16T02:06:57.000Z",
+      "role": "workflow:owner",
+      "workflowId": "nEzJiYRTsfIgGdUkut3b5",
+      "projectId": "E56trdgxInvxGA6Y",
+      "project": {
+        "updatedAt": "2026-01-12T22:50:30.978Z",
+        "createdAt": "2026-01-12T21:05:23.614Z",
+        "id": "E56trdgxInvxGA6Y",
+        "name": "jorge Patino <jorgeptn@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-12T21:05:23.619Z",
+            "createdAt": "2026-01-12T21:05:23.619Z",
+            "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+            "projectId": "E56trdgxInvxGA6Y",
+            "user": {
+              "updatedAt": "2026-02-21T05:01:06.000Z",
+              "createdAt": "2026-01-12T21:05:23.596Z",
+              "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+              "email": "jorgeptn@gmail.com",
+              "firstName": "jorge",
+              "lastName": "Patino",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2026-01-12T22:51:32.120Z",
+                "personalization_survey_n8n_version": "2.2.5",
+                "companyIndustryExtended": [
+                  "physical-retail-or-services"
+                ],
+                "companySize": "<20",
+                "companyType": "other",
+                "role": "customer-support",
+                "reportedSource": "google"
+              },
+              "settings": {
+                "firstSuccessfulWorkflowId": "zQ-8lqPtwSRNSIrY09cbr",
+                "userActivated": true,
+                "userActivatedAt": 1768360374572,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 2,
+                  "lastShownAt": 1771450117373
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-21",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-18T22:43:30.780Z",
+  "versionCounter": 40,
+  "versionId": "ad6de315-ba4e-4e77-9b55-6a5762b0f1d9"
+}
