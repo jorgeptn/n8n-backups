@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-02-21T05:14:16.000Z",
-    "createdAt": "2026-02-21T05:14:14.480Z",
-    "versionId": "96e9f643-ae87-466e-95b0-0aadd01889f3",
+    "updatedAt": "2026-02-21T05:22:49.000Z",
+    "createdAt": "2026-02-21T05:20:22.670Z",
+    "versionId": "b9c0c508-8771-4c2c-899b-8c2592d0db8a",
     "workflowId": "fTHAqMdBSyBxtd0V8CcLk",
     "nodes": [
       {
@@ -12,7 +12,7 @@
         "type": "n8n-nodes-base.manualTrigger",
         "position": [
           368,
-          488
+          496
         ],
         "typeVersion": 1,
         "id": "01183441-8073-44d3-861d-ebb17fc7620e"
@@ -86,7 +86,7 @@
         "type": "n8n-nodes-base.merge",
         "position": [
           1712,
-          344
+          352
         ],
         "typeVersion": 1,
         "id": "1accb2ab-95b6-42bb-bc1a-28d16c1fc2d6"
@@ -101,7 +101,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "position": [
           1488,
-          520
+          528
         ],
         "typeVersion": 1,
         "id": "b207395f-b42f-42de-8422-cf9513a58cf9",
@@ -136,7 +136,7 @@
         "type": "n8n-nodes-base.switch",
         "position": [
           2160,
-          312
+          320
         ],
         "typeVersion": 1,
         "id": "2d19cd72-22e6-482c-9197-71c1e3bc811b"
@@ -176,40 +176,13 @@
       },
       {
         "parameters": {
-          "authentication": "oAuth2",
-          "resource": "file",
-          "operation": "edit",
-          "owner": "={{$node[\"Globals\"].json[\"repo\"][\"owner\"]}}",
-          "repository": "={{$node[\"Globals\"].json[\"repo\"][\"name\"]}}",
-          "filePath": "=={{$node[\"Globals\"].json[\"repo\"][\"path\"]}}{{$node[\"N8N Workflow Detail\"].json[\"name\"]}}.json",
-          "fileContent": "={{$node[\"isDiffOrNew\"].json[\"n8n_data_stringy\"]}}",
-          "commitMessage": "==[N8N Backup] {{$node[\"N8N Workflow Detail\"].json[\"name\"]}}.json ({{$json[\"github_status\"]}})"
-        },
-        "name": "GitHub Edit",
-        "type": "n8n-nodes-base.github",
-        "position": [
-          2688,
-          592
-        ],
-        "typeVersion": 1,
-        "id": "102227a1-58ed-4ae1-bfd9-a5db451a8ffa",
-        "webhookId": "5d233ecc-bdae-4bbc-9d4a-0c9e55a32b52",
-        "credentials": {
-          "githubOAuth2Api": {
-            "id": "iXZdZRwB3HXl1nO7",
-            "name": "GitHub account"
-          }
-        }
-      },
-      {
-        "parameters": {
           "functionCode": "// File Returned with Content\nif (Object.keys(items[0].json).includes(\"content\")) {\n  // Get JSON Objects\n  var origWorkflow = JSON.parse(Buffer.from(items[0].json.content, 'base64').toString());\n  var n8nWorkflow = items[1].json; // <-- Corregido para la nueva API\n  \n  // Order JSON Objects\n  var orderedOriginal = {}\n  var orderedActual = {}\n  \n  Object.keys(origWorkflow).sort().forEach(function(key) {\n    orderedOriginal[key] = origWorkflow[key];\n  });\n  \n  Object.keys(n8nWorkflow).sort().forEach(function(key) {\n    orderedActual[key] = n8nWorkflow[key];\n  });\n  \n  // Determine Difference\n  if ( JSON.stringify(orderedOriginal) === JSON.stringify(orderedActual) ) {\n    items[0].json.github_status = \"same\";\n    items[0].json.content_decoded = orderedOriginal;\n  } else {\n    items[0].json.github_status = \"different\";\n    items[0].json.content_decoded = orderedOriginal;\n    items[0].json.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n  }\n// No File Returned / New Workflow\n} else {\n  // Order JSON Object\n  var n8nWorkflow = items[1].json; // <-- Corregido para la nueva API\n  var orderedActual = {}\n  Object.keys(n8nWorkflow).sort().forEach(function(key) {\n    orderedActual[key] = n8nWorkflow[key];\n  });\n  \n  // Proper Formatting\n  items[0].json.github_status = \"new\";\n  items[0].json.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n}\n\n// Return Items\nreturn items;"
         },
         "name": "isDiffOrNew",
         "type": "n8n-nodes-base.function",
         "position": [
           1936,
-          344
+          352
         ],
         "typeVersion": 1,
         "id": "36a15a2b-ff78-460c-9277-cf663f2529f9"
@@ -229,7 +202,7 @@
         "type": "n8n-nodes-base.cron",
         "position": [
           368,
-          680
+          688
         ],
         "typeVersion": 1,
         "id": "95e73220-d4bc-4f44-81b4-3baaa74d4652"
@@ -295,6 +268,33 @@
         "typeVersion": 1,
         "id": "47fc4714-48eb-4755-a61a-2be27e6174be",
         "webhookId": "13305827-fdbd-4e30-a5ba-5a7441beb735",
+        "credentials": {
+          "githubOAuth2Api": {
+            "id": "iXZdZRwB3HXl1nO7",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "resource": "file",
+          "operation": "edit",
+          "owner": "jorgeptn",
+          "repository": "n8n-backups",
+          "filePath": "={{$node[\"N8N Workflow Detail\"].json[\"name\"]}}.json",
+          "fileContent": "={{$node[\"isDiffOrNew\"].json[\"n8n_data_stringy\"]}}",
+          "commitMessage": "=[N8N Backup] Modificado: {{$node[\"N8N Workflow Detail\"].json[\"name\"]}}.json"
+        },
+        "name": "GitHub Edit1",
+        "type": "n8n-nodes-base.github",
+        "position": [
+          2720,
+          512
+        ],
+        "typeVersion": 1,
+        "id": "ddf76469-d868-4edf-9c05-e2a669ba4329",
+        "webhookId": "3a562f89-12be-4aab-9151-52883806f9af",
         "credentials": {
           "githubOAuth2Api": {
             "id": "iXZdZRwB3HXl1nO7",
@@ -374,7 +374,7 @@
         "main": [
           [
             {
-              "node": "GitHub Edit",
+              "node": "GitHub Edit1",
               "type": "main",
               "index": 0
             }
@@ -391,17 +391,6 @@
             },
             {
               "node": "N8N Workflow Detail",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "GitHub Edit": {
-        "main": [
-          [
-            {
-              "node": "OneAtATime",
               "type": "main",
               "index": 0
             }
@@ -498,24 +487,35 @@
             }
           ]
         ]
+      },
+      "GitHub Edit1": {
+        "main": [
+          [
+            {
+              "node": "OneAtATime",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "jorge Patino",
-    "name": "Version 96e9f643",
+    "name": "Version b9c0c508",
     "description": "",
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-21T05:14:16.919Z",
-        "id": 31,
+        "createdAt": "2026-02-21T05:22:49.122Z",
+        "id": 32,
         "workflowId": "fTHAqMdBSyBxtd0V8CcLk",
-        "versionId": "96e9f643-ae87-466e-95b0-0aadd01889f3",
+        "versionId": "b9c0c508-8771-4c2c-899b-8c2592d0db8a",
         "event": "activated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
-  "activeVersionId": "96e9f643-ae87-466e-95b0-0aadd01889f3",
+  "activeVersionId": "b9c0c508-8771-4c2c-899b-8c2592d0db8a",
   "connections": {
     "new": {
       "main": [
@@ -1091,6 +1091,6 @@
   "tags": [],
   "triggerCount": 1,
   "updatedAt": "2026-02-21T05:20:22.667Z",
-  "versionCounter": 5,
+  "versionCounter": 7,
   "versionId": "b9c0c508-8771-4c2c-899b-8c2592d0db8a"
 }
