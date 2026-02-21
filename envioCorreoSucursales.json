@@ -1,0 +1,720 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-14T03:35:23.802Z",
+  "description": null,
+  "id": "HCP8tZpQE3Bc7KK8nSW0S",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "envioCorreoSucursales",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "38379081-0aee-4c82-8949-e75635e15bb1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "¿ENVIADO POR CORREO?",
+              "lookupValue": "NO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        0
+      ],
+      "id": "f8c6534d-894b-4f7c-98e4-f49ba28cf6e0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU",
+          "mode": "list",
+          "cachedResultName": "plantillaSucursales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU/edit?usp=drivesdk"
+        },
+        "name": "=AKIENVIO S.A.S SUCURSALES {{$now.toFormat('dd.MM.yyyy')}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e0cb4e34-5098-4fd2-89e9-94413f923786",
+      "name": "Copy file",
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $item(0).$node[\"Copy file\"].json[\"id\"] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1745303911,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LhLoOvgSKMQ-L_2AP9dkytopI1H1dCkBtm2Jha_wThg/edit#gid=1745303911"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NOMBRE DE LA EMPRESA": "={{ $json[\"NOMBRE DE LA EMPRESA\"] }}",
+            "NIT": "={{ $json.NIT }}",
+            "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $json[\"CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO\"] }}",
+            "TELÉFONO": "={{ $json[\"TELÉFONO\"] }}",
+            "DIRECCIÓN": "={{ $json[\"DIRECCIÓN\"] }}",
+            "CIUDAD PRESTACIÓN SERVICIO": "={{ $json[\"CIUDAD PRESTACIÓN SERVICIO\"] }}",
+            "E-MAIL": "={{ $json[\"E-MAIL\"] }}",
+            "PERSONA RESPONSABLE DEL PAGO": "={{ $json[\"PERSONA RESPONSABLE DEL PAGO\"] }}",
+            "HORARIO DE RECOGIDA": "={{ $json[\"HORARIO DE RECOGIDA\"] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "NOMBRE DE LA EMPRESA",
+              "displayName": "NOMBRE DE LA EMPRESA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID SUCURSAL",
+              "displayName": "ID SUCURSAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TELÉFONO",
+              "displayName": "TELÉFONO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DIRECCIÓN",
+              "displayName": "DIRECCIÓN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CIUDAD PRESTACIÓN SERVICIO",
+              "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-MAIL",
+              "displayName": "E-MAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PERSONA RESPONSABLE DEL PAGO",
+              "displayName": "PERSONA RESPONSABLE DEL PAGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HORARIO DE RECOGIDA",
+              "displayName": "HORARIO DE RECOGIDA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kind",
+              "displayName": "kind",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mimeType",
+              "displayName": "mimeType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        0
+      ],
+      "id": "8559f033-fabe-43cf-834c-dd6d34a8de5b",
+      "name": "Append row in sheet",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jorgeptn@gmail.com;Ejecutivodepuntos.bogota@interrapidisimo.com;supervisor.clientescorporativos@interrapidisimo.com;auxiliar.canales2@interrapidisimo.com;coordinador.ventascorporativas1@interrapidisimo.com;subgerente.cuentasclave@interrapidisimo.com;supervisor.clientescorporativos1@interrapidisimo.com;supervisor.puntosmoviles3@interrapidisimo.com",
+        "subject": "={{ $('Copy file').item.json.name }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n                    Creaci&oacute;n de Sucursales\n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                \n                <p>Buen d&iacute;a, <strong>Kevin</strong>.</p>\n                \n                <p>Esperamos que te encuentres muy bien.</p>\n                \n                <p>Te hacemos entrega del archivo adjunto necesario para la <span class=\"highlight\">creaci&oacute;n de las sucursales</span>. Te agradecemos procesar esta informaci&oacute;n para poner al d&iacute;a los registros que tenemos pendientes.</p>\n                \n                <p>Cualquier duda adicional que surja durante el proceso, quedamos atentos para apoyarte de inmediato.</p>\n            </div>\n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 3203453744</p>\n                <p class=\"sig-role\">Director de Operaciones</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "74a2d4e8-0e79-46e2-b0f6-75be6d54030a",
+      "name": "Send a message",
+      "webhookId": "91b3ada4-1783-4c3f-9618-919eab1458f2",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E6A3o0KS4UfkMlS3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "¿ENVIADO POR CORREO?",
+              "lookupValue": "NO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1056,
+        0
+      ],
+      "id": "03003e59-4bb1-42cb-b149-1e91029ef76b",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "¿ENVIADO POR CORREO?": "SI"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "NOMBRE DE LA EMPRESA",
+              "displayName": "NOMBRE DE LA EMPRESA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID SUCURSAL",
+              "displayName": "ID SUCURSAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TELÉFONO",
+              "displayName": "TELÉFONO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DIRECCIÓN",
+              "displayName": "DIRECCIÓN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CIUDAD PRESTACIÓN SERVICIO",
+              "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "E-MAIL",
+              "displayName": "E-MAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PERSONA RESPONSABLE DEL PAGO",
+              "displayName": "PERSONA RESPONSABLE DEL PAGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "HORARIO DE RECOGIDA",
+              "displayName": "HORARIO DE RECOGIDA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "¿ENVIADO POR CORREO?",
+              "displayName": "¿ENVIADO POR CORREO?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "99c00003-3972-498b-aef9-ed334595d838",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Copy file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          },
+          "fileName": "=SUCURSALES AKIENVIO S.A.S {{ $today.toFormat('dd-MM-yyyy') }}.xlsx"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        688,
+        0
+      ],
+      "id": "f4b43d3b-74d5-4050-b453-53633c76f7b4",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-14T03:35:23.806Z",
+      "createdAt": "2026-01-14T03:35:23.806Z",
+      "role": "workflow:owner",
+      "workflowId": "HCP8tZpQE3Bc7KK8nSW0S",
+      "projectId": "E56trdgxInvxGA6Y",
+      "project": {
+        "updatedAt": "2026-01-12T22:50:30.978Z",
+        "createdAt": "2026-01-12T21:05:23.614Z",
+        "id": "E56trdgxInvxGA6Y",
+        "name": "jorge Patino <jorgeptn@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-12T21:05:23.619Z",
+            "createdAt": "2026-01-12T21:05:23.619Z",
+            "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+            "projectId": "E56trdgxInvxGA6Y",
+            "user": {
+              "updatedAt": "2026-02-21T05:01:06.000Z",
+              "createdAt": "2026-01-12T21:05:23.596Z",
+              "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+              "email": "jorgeptn@gmail.com",
+              "firstName": "jorge",
+              "lastName": "Patino",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2026-01-12T22:51:32.120Z",
+                "personalization_survey_n8n_version": "2.2.5",
+                "companyIndustryExtended": [
+                  "physical-retail-or-services"
+                ],
+                "companySize": "<20",
+                "companyType": "other",
+                "role": "customer-support",
+                "reportedSource": "google"
+              },
+              "settings": {
+                "firstSuccessfulWorkflowId": "zQ-8lqPtwSRNSIrY09cbr",
+                "userActivated": true,
+                "userActivatedAt": 1768360374572,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 2,
+                  "lastShownAt": 1771450117373
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-21",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-21T04:20:08.000Z",
+  "versionCounter": 20,
+  "versionId": "34b39aba-dcd8-442e-bcc8-6ac20be51db9"
+}
