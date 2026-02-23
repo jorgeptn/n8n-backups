@@ -215,6 +215,14 @@
         "versionId": "40141149-994b-4ac4-af8a-4e772c772f60",
         "event": "activated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
+      },
+      {
+        "createdAt": "2026-02-22T21:49:26.296Z",
+        "id": 35,
+        "workflowId": "nEzJiYRTsfIgGdUkut3b5",
+        "versionId": "40141149-994b-4ac4-af8a-4e772c772f60",
+        "event": "activated",
+        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
@@ -225,17 +233,6 @@
         [
           {
             "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Create a draft",
             "type": "main",
             "index": 0
           }
@@ -279,6 +276,28 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2026-02-16T02:06:56.992Z",
@@ -308,24 +327,10 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "// CAMBIO AQUÍ: Usamos $json.output porque así viene de tu agente\nlet rawText = $json.output;\n\ntry {\n  // Validación de seguridad: Si rawText viene vacío, lanzamos error manual\n  if (!rawText) {\n    throw new Error(\"El campo 'output' no existe en la entrada\");\n  }\n\n  // 1. Eliminamos los bloques de código de markdown (```json o ```) \n  // y cualquier espacio en blanco al inicio o final\n  const cleanText = rawText.replace(/```json|```/g, \"\").trim();\n\n  // 2. Intentamos convertir el texto limpio a objeto JSON\n  const parsedData = JSON.parse(cleanText);\n\n  // Devolvemos el objeto limpio\n  return parsedData;\n\n} catch (error) {\n  // Manejo de errores detallado\n  return {\n    json: {\n      error: \"No se pudo extraer un JSON válido\",\n      mensaje_error: error.message,\n      texto_recibido: rawText // Para que veas qué intentó procesar\n    }\n  };\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        144,
-        -128
-      ],
-      "id": "327b0baa-2950-4eda-aade-3e32cc3c0c64",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
         "resource": "draft",
         "subject": "={{ $json.asunto }}",
         "emailType": "html",
-        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n{{ $json.asunto }}              \n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                {{ $json.cuerpo }}\n                \n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 315 093 3000</p>\n<a href=\\\"mailto:soporte@akienvio.co\\\">soporte@akienvio.co</a>\n                <p class=\"sig-role\">Sección de Operaciones - División de PQRS</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>\n",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n     {{ $json.asunto }}   \n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                \n{{ $json.cuerpo }}\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 315 093 3000</p>\n<a href=\\\"mailto:soporte@akienvio.co\\\">soporte@akienvio.co</a>\n                <p class=\"sig-role\">Sección de Operaciones - División de PQRS</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>\n",
         "options": {
           "sendTo": "={{ $json.para }}"
         }
@@ -333,7 +338,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        304,
+        416,
         -128
       ],
       "id": "38e6eb79-1b2c-4d02-8790-6db83ff0fc36",
@@ -357,7 +362,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -144,
+        -288,
         -128
       ],
       "id": "862709df-364b-4949-89d0-97f2bc41fe60",
@@ -373,8 +378,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
       "typeVersion": 1,
       "position": [
-        -208,
-        112
+        -272,
+        96
       ],
       "id": "e166373b-8d35-4be2-8121-a3afe24c6296",
       "name": "DeepSeek Chat Model1",
@@ -393,17 +398,47 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -64,
-        48
+        -160,
+        32
       ],
       "id": "04d8f316-000f-49dc-9127-18ac7d0d3ee0",
       "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let rawText = $json.output;\n\ntry {\n  if (!rawText) throw new Error(\"El campo 'output' no existe\");\n\n  // Limpiamos y convertimos a JSON\n  const cleanText = rawText.replace(/```json|```/g, \"\").trim();\n  const parsedData = JSON.parse(cleanText);\n\n  // Devolvemos un solo objeto, empacando los correos en la propiedad \"correos\"\n  return {\n    json: {\n      correos: Array.isArray(parsedData) ? parsedData : [parsedData]\n    }\n  };\n\n} catch (error) {\n  return {\n    json: {\n      error: \"No se pudo extraer un JSON válido\",\n      mensaje_error: error.message\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -128
+      ],
+      "id": "327b0baa-2950-4eda-aade-3e32cc3c0c64",
+      "name": "Code in JavaScript",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "correos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -128
+      ],
+      "id": "64a48f4d-3af2-431d-b45a-4b53f03d3497",
+      "name": "Split Out"
     }
   ],
   "pinData": {},
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
+    "availableInMCP": true,
     "timeSavedMode": "fixed",
     "saveDataErrorExecution": "all",
     "saveDataSuccessExecution": "all",
@@ -433,7 +468,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-02-21T05:01:06.000Z",
+              "updatedAt": "2026-02-22T16:29:52.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -464,7 +499,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-21",
+              "lastActiveAt": "2026-02-22",
               "isPending": false
             }
           }
@@ -475,7 +510,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-02-18T22:43:30.780Z",
-  "versionCounter": 40,
-  "versionId": "ad6de315-ba4e-4e77-9b55-6a5762b0f1d9"
+  "updatedAt": "2026-02-22T21:49:26.076Z",
+  "versionCounter": 44,
+  "versionId": "26302b80-906b-4ffb-812f-8ac08a2f048e"
 }
