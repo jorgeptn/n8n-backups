@@ -162,20 +162,19 @@
       "parameters": {
         "options": {
           "allowFileUploads": true
-        },
-        "path": "8c69450f-0760-47a0-939c-4c196a0c6bb3"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
         -512,
-        -128
+        44
       ],
       "id": "e29c861e-b50d-4a90-9111-de9e04305fcc",
       "name": "When chat message received",
       "webhookId": "8c69450f-0760-47a0-939c-4c196a0c6bb3",
-      "notes": "Disparador del flujo. Recibe mensaje/archivo en el chat y crea el item de entrada para el procesamiento.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Disparador del flujo. Recibe mensaje/archivo en el chat y crea el item de entrada para el procesamiento."
     },
     {
       "parameters": {
@@ -185,31 +184,30 @@
         "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n     {{ $json.asunto }}   \n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                \n{{ $json.cuerpo }}\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 315 093 3000</p>\n<a href=\\\"mailto:soporte@akienvio.co\\\">soporte@akienvio.co</a>\n                <p class=\"sig-role\">Sección de Operaciones - División de PQRS</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>\n",
         "options": {
           "sendTo": "={{ $json.para }}"
-        },
-        "path": "3cd78b60-7cd7-49f6-b6b1-7fdc7b44f789"
+        }
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        416,
+        1184,
         -128
       ],
       "id": "66632e4c-ff09-4f84-993e-49299b5ba176",
       "name": "Create a draft",
       "webhookId": "3cd78b60-7cd7-49f6-b6b1-7fdc7b44f789",
+      "notesInFlow": true,
       "credentials": {
         "gmailOAuth2": {
           "id": "E6A3o0KS4UfkMlS3",
           "name": "Gmail account"
         }
       },
-      "notes": "Crea borrador de correo en Gmail usando asunto/cuerpo/para y plantilla HTML corporativa.",
-      "notesInFlow": true
+      "notes": "Crea borrador de correo en Gmail usando asunto/cuerpo/para y plantilla HTML corporativa."
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.files[0] }}",
+        "text": "=={{ $json.csv_crudo }}.",
         "options": {
           "systemMessage": "# PERSONA\nEspecialista en PQR de Akienvio SAS. Tu tarea es convertir una línea de datos CSV en un JSON de correo formal, extiende la redaccion de la PQR y utiliza un tono formal, juridico, sin inverntar hechos y concervando la informacion original del cvs en cuanto detalles de numero de guia y fechas\n\n# REGLAS DE FORMATO\n- **Entrada:** Recibirás los datos en formato CSV (Cabecera + Fila).\n- **Salida:** Responde ÚNICAMENTE con un objeto JSON estructurado: {\"para\": \"...\", \"asunto\": \"...\", \"cuerpo\": \"...\", \"guia\": \"...\"}.\n- ** No es necesario la inclusion de firma al final del \"cuerpo\" dado que se usa una plantilla para el envio del correo que ya la incluye\n\n# INSTRUCCIONES DE FORMATO HTML\n- El campo \"cuerpo\" debe ser redactado en formato HTML.\n- Usa la etiqueta `<p>` para párrafos y `<br>` para saltos de línea sencillos.\n- Usa `<strong>` para resaltar datos clave (número de guía, fechas, leyes).\n\n\n# MAPEO DE ENTRADA\nUtiliza estos campos del cvs para redactar:\n- `paqueteria`: Nombre de la transportadora (ej. Coordinadora, servientrega). utilizar el que aparezca en el cvs\n- `guia`: Identificador del paquete debe aparecer en el texto de la PQR y no pude ser cambiado o moficicado bajo ninguna condicion.\n- `tipoPQR`: Motivo (ej. guiaRetrasado, guiaMalEntregado).\n- `descrpcionPaquete` & `contextoPQR`: Detalles para el cuerpo del mensaje.\n- `ultimoMovimiento`: Fecha clave para reclamar retrasos.\n- `anexos`: Menciona que se adjuntan pruebas si este campo contiene información.\n\n# EJEMPLOS DE REFERENCIA\n\n## Ejemplo 1 (Retraso)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352524698,guiaRetrasado,jorgeptn@gmail.com,06/02/2026,paquete sin movimiento\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"Agilización de entrega - Guía 75352524698\",\"cuerpo\":\"Equipo Coordinadora,\\n\\nEl paquete 75352524698 presenta retraso desde el 06/02/2026. Solicitamos escalamiento urgente y fecha estimada.\\n\\nAtentamente,\\nSoporte Akienvio\",\"guia\":\"75352524698\"}\n\n## Ejemplo 2 (Legal/Mal Entregado)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352519478,guiaMalEntregado,jorgeptn@gmail.com,06/02/2026,entrega irregular citofono no porteria\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"PQR Entrega Irregular - Guía 75352519478\",\"cuerpo\":\"Señores Coordinadora,\\n\\nAkienvio SAS (NIT 901702784) radica PQR por entrega irregular de la guía 75352519478. El cliente no recibió el paquete. Citamos Art. 25 Ley 1369/2009 y Res. 3038/2011. Exigimos indemnización o entrega correcta.\\n\\nNotificaciones: soporte@akienvio.co\\n\\nAtentamente,\\nAkienvio SAS\",\"guia\":\"75352519478\"}\n\n# TAREA ACTUAL\nProcesa esta línea CSV:\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nGenera las PQR en el formato JSON structurado\n\n# TAREA ACTUAL\nGenera el JSON de la PQR para los siguientes datos extraídos de la fila actual del archivo:\n\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\n\n\n"
         }
@@ -217,13 +215,13 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -288,
-        -128
+        160,
+        -80
       ],
       "id": "f79b0b4c-029c-47e7-82c4-49ba739e8529",
       "name": "AI Agent",
-      "notes": "Genera la PQR en formato JSON estructurado (para, asunto, cuerpo, guia) a partir de la entrada normalizada y el prompt de negocio.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Genera la PQR en formato JSON estructurado (para, asunto, cuerpo, guia) a partir de la entrada normalizada y el prompt de negocio."
     },
     {
       "parameters": {
@@ -235,19 +233,19 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
       "typeVersion": 1,
       "position": [
-        -272,
-        96
+        168,
+        144
       ],
       "id": "d27506c9-549d-4c71-9117-5c8739531281",
       "name": "DeepSeek Chat Model1",
+      "notesInFlow": true,
       "credentials": {
         "deepSeekApi": {
           "id": "JOgBNw5EPOWd1rXO",
           "name": "DeepSeekPQRRadicador"
         }
       },
-      "notes": "Modelo LLM usado por el agente IA para redactar y estructurar la respuesta.",
-      "notesInFlow": true
+      "notes": "Modelo LLM usado por el agente IA para redactar y estructurar la respuesta."
     },
     {
       "parameters": {
@@ -257,13 +255,13 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -160,
-        32
+        296,
+        144
       ],
       "id": "f7043d0a-2868-45a8-a7d2-de8152d47a78",
       "name": "Simple Memory",
-      "notes": "Memoria de contexto por sesión para mantener consistencia conversacional del agente.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Memoria de contexto por sesión para mantener consistencia conversacional del agente."
     },
     {
       "parameters": {
@@ -273,15 +271,15 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        -128
+        512,
+        -80
       ],
       "id": "77075e0b-0863-42d1-a1af-803039129fb6",
       "name": "Code in JavaScript",
       "executeOnce": false,
       "alwaysOutputData": false,
-      "notes": "Limpia y parsea la salida del agente IA; convierte texto/JSON en una estructura uniforme bajo la propiedad correos.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Limpia y parsea la salida del agente IA; convierte texto/JSON en una estructura uniforme bajo la propiedad correos."
     },
     {
       "parameters": {
@@ -291,29 +289,28 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        176,
+        960,
         -128
       ],
       "id": "b0bca724-8120-4cd7-8e31-4c12a6cee7b4",
       "name": "Split Out",
-      "notes": "Divide el arreglo correos en items individuales para procesar y crear un draft por cada correo.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Divide el arreglo correos en items individuales para procesar y crear un draft por cada correo."
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const input = $json;\nconst mensaje = (input.mensaje ?? input.texto ?? (input.files && input.files[0]) ?? '').toString().trim();\nconst correo = (input.correo ?? input.email ?? '').toString().trim();\nconst normalized = mensaje.replace(/\\s+/g,' ').trim();\nif (!normalized) {\n  return { json: { __route: 'error', ok:false, status:'error', errorType:'VALIDATION', errorMessage:'Campo mensaje requerido', workflow:'radicarPQR v2 optimizado', executionId:$execution.id, input } };\n}\nreturn { json: { ...input, mensaje: normalized, mensaje_normalizado: normalized, correo, ok:true, __route:'ok', receivedAt:new Date().toISOString(), workflow:'radicarPQR v2 optimizado', workflowVersion:'v2', executionId:$execution.id } };"
+        "jsCode": "let result = [];\n\nfor (const item of $input.all()) {\n    const input = item.json;\n    let csvContent = \"\";\n    \n    // 1. Extraer el texto del archivo binario\n    const binaryKey = item.binary ? Object.keys(item.binary)[0] : null;\n    if (binaryKey) {\n        const base64Data = item.binary[binaryKey].data;\n        csvContent = Buffer.from(base64Data, 'base64').toString('utf8');\n    }\n\n    const mensaje = (input.mensaje ?? input.texto ?? csvContent ?? '').toString().trim();\n\n    if (!mensaje) {\n        result.push({ json: { __route: 'error', ok: false, errorMessage: 'Archivo vacío o sin mensaje', executionId: $execution.id } });\n        continue;\n    }\n\n    // 2. Si hay CSV, lo dividimos por filas\n    if (csvContent) {\n        // Separamos por saltos de línea y filtramos líneas en blanco\n        const lines = csvContent.split(/\\r?\\n/).filter(line => line.trim() !== '');\n        \n        // Verificamos que tenga al menos cabecera y 1 fila de datos\n        if (lines.length > 1) {\n            const headers = lines[0]; // Guardamos la primera línea como cabecera\n            \n            // Iteramos desde la línea 1 (omitiendo la cabecera)\n            for (let i = 1; i < lines.length; i++) {\n                const fila = lines[i];\n                \n                // Creamos un nuevo elemento (item) para n8n por cada fila\n                result.push({\n                    json: {\n                        ...input,\n                        // Aquí creamos el mini-CSV perfecto para tu Agente IA\n                        csv_crudo: headers + \"\\n\" + fila, \n                        numero_fila: i, // Útil para trazabilidad\n                        ok: true,\n                        __route: 'ok',\n                        executionId: $execution.id\n                    }\n                });\n            }\n            continue; // Pasamos al siguiente item de entrada\n        }\n    }\n    \n    // 3. Fallback si es solo texto normal o un CSV de una sola línea\n    result.push({ \n        json: { \n            ...input, \n            csv_crudo: csvContent, \n            ok: true, \n            __route: 'ok',\n            executionId: $execution.id \n        } \n    });\n}\n\nreturn result;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -420,
-        -128
+        -288,
+        48
       ],
       "id": "2d00a023-75e2-4b48-83f6-a26343b86734",
       "name": "Validar y Normalizar Entrada",
-      "notes": "Valida que exista contenido de entrada (mensaje/texto/archivo), normaliza espacios y agrega metadatos de trazabilidad (executionId, receivedAt, version).",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Valida que exista contenido de entrada (mensaje/texto/archivo), normaliza espacios y agrega metadatos de trazabilidad (executionId, receivedAt, version)."
     },
     {
       "parameters": {
@@ -322,7 +319,7 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
-            "version": 2
+            "version": 1
           },
           "conditions": [
             {
@@ -342,13 +339,13 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -350,
-        -128
+        -64,
+        44
       ],
       "id": "b5a8aa64-1f7b-4891-b720-05eb884ac2cf",
       "name": "IF Entrada Invalida",
-      "notes": "Enruta según validación inicial: si la entrada es inválida, envía a manejo de error; si es válida, continúa al agente IA.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Enruta según validación inicial: si la entrada es inválida, envía a manejo de error; si es válida, continúa al agente IA."
     },
     {
       "parameters": {
@@ -377,13 +374,13 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        88,
-        -128
+        736,
+        -80
       ],
       "id": "7ed648d1-5eca-4771-9443-22fe61ea35c2",
       "name": "IF Error Parseo JSON",
-      "notes": "Verifica si hubo error al parsear JSON. Si hay error, enrutamiento a salida de error; si no, continúa al split de correos.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Verifica si hubo error al parsear JSON. Si hay error, enrutamiento a salida de error; si no, continúa al split de correos."
     },
     {
       "parameters": {
@@ -393,13 +390,13 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        280,
-        80
+        960,
+        144
       ],
       "id": "0bcf80f3-d58a-434a-aae7-6d31b212c45d",
       "name": "Construir Error Estandar",
-      "notes": "Construye un payload de error uniforme con workflow, node, executionId, mensaje de error e input para facilitar soporte.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Construye un payload de error uniforme con workflow, node, executionId, mensaje de error e input para facilitar soporte."
     },
     {
       "parameters": {
@@ -409,13 +406,13 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        620,
+        1408,
         -128
       ],
       "id": "99c285ea-80f1-4c1f-aee3-e9258b6a955d",
       "name": "Log Exito",
-      "notes": "Registra metadatos finales de éxito (timestamps, executionId, versión) para trazabilidad.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Registra metadatos finales de éxito (timestamps, executionId, versión) para trazabilidad."
     },
     {
       "parameters": {
@@ -425,77 +422,77 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        520,
-        80
+        1184,
+        140
       ],
       "id": "ff0bcb8a-3d1f-4155-9aed-259d71f8df7d",
       "name": "Log Error",
-      "notes": "Registra metadatos finales de error para auditoría y diagnóstico.",
-      "notesInFlow": true
+      "notesInFlow": true,
+      "notes": "Registra metadatos finales de error para auditoría y diagnóstico."
     },
     {
+      "parameters": {
+        "content": "## 1) Entrada y validación\n- **When chat message received**: dispara el flujo con mensaje/archivo.\n- **Validar y Normalizar Entrada**: valida campos mínimos, normaliza texto y agrega trazabilidad (`executionId`, `receivedAt`, `workflowVersion`).\n- **IF Entrada Invalida**: enruta a error si no hay entrada válida; si está OK, continúa a IA.",
+        "height": 240,
+        "width": 560,
+        "color": 7
+      },
       "id": "4b70d1cd-f129-4b5d-b583-38fb3b727483",
       "name": "DOC - Entrada y validación",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -760,
-        -360
-      ],
-      "parameters": {
-        "content": "## 1) Entrada y validación\n- **When chat message received**: dispara el flujo con mensaje/archivo.\n- **Validar y Normalizar Entrada**: valida campos mínimos, normaliza texto y agrega trazabilidad (`executionId`, `receivedAt`, `workflowVersion`).\n- **IF Entrada Invalida**: enruta a error si no hay entrada válida; si está OK, continúa a IA.",
-        "width": 560,
-        "height": 240,
-        "color": 7
-      }
+        -640,
+        -368
+      ]
     },
     {
+      "parameters": {
+        "content": "## 2) Generación IA\n- **AI Agent**: transforma la entrada a JSON de PQR (`para`, `asunto`, `cuerpo`, `guia`).\n- **DeepSeek Chat Model1**: modelo LLM de redacción/estructura.\n- **Simple Memory**: contexto por sesión para coherencia.",
+        "height": 220,
+        "width": 520,
+        "color": 4
+      },
       "id": "19f1b8bf-5ae3-4cf1-a243-505089e8405e",
       "name": "DOC - Generación IA",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -360,
-        -360
-      ],
-      "parameters": {
-        "content": "## 2) Generación IA\n- **AI Agent**: transforma la entrada a JSON de PQR (`para`, `asunto`, `cuerpo`, `guia`).\n- **DeepSeek Chat Model1**: modelo LLM de redacción/estructura.\n- **Simple Memory**: contexto por sesión para coherencia.",
-        "width": 520,
-        "height": 220,
-        "color": 4
-      }
+        -64,
+        -368
+      ]
     },
     {
+      "parameters": {
+        "content": "## 3) Parseo y preparación\n- **Code in JavaScript**: limpia la salida del agente y parsea JSON.\n- **IF Error Parseo JSON**: detecta fallos de parseo y redirige a manejo de error.\n- **Split Out**: separa `correos[]` en items individuales para envío.",
+        "height": 230,
+        "width": 560,
+        "color": 5
+      },
       "id": "74e01aaf-cb64-4c8b-8638-f57246615e3d",
       "name": "DOC - Parseo y preparación de salida",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        40,
-        -360
-      ],
-      "parameters": {
-        "content": "## 3) Parseo y preparación\n- **Code in JavaScript**: limpia la salida del agente y parsea JSON.\n- **IF Error Parseo JSON**: detecta fallos de parseo y redirige a manejo de error.\n- **Split Out**: separa `correos[]` en items individuales para envío.",
-        "width": 560,
-        "height": 230,
-        "color": 5
-      }
+        464,
+        -368
+      ]
     },
     {
+      "parameters": {
+        "content": "## 4) Salida y observabilidad\n- **Create a draft**: crea borrador Gmail con plantilla HTML corporativa.\n- **Log Exito**: registra estado exitoso con trazabilidad.\n- **Construir Error Estandar** + **Log Error**: formato único de error para auditoría/soporte.",
+        "height": 230,
+        "width": 568,
+        "color": 6
+      },
       "id": "51506803-43d1-4995-9974-bc75cc7da2e2",
       "name": "DOC - Salida y observabilidad",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        520,
-        -360
-      ],
-      "parameters": {
-        "content": "## 4) Salida y observabilidad\n- **Create a draft**: crea borrador Gmail con plantilla HTML corporativa.\n- **Log Exito**: registra estado exitoso con trazabilidad.\n- **Construir Error Estandar** + **Log Error**: formato único de error para auditoría/soporte.",
-        "width": 600,
-        "height": 230,
-        "color": 6
-      }
+        1040,
+        -368
+      ]
     }
   ],
   "pinData": {},
@@ -573,7 +570,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-02-23T00:10:56.346Z",
-  "versionCounter": 49,
-  "versionId": "2a29063b-676d-4109-a6a7-f5c6cc0ef757"
+  "updatedAt": "2026-02-23T01:39:10.923Z",
+  "versionCounter": 51,
+  "versionId": "a9a96935-31d1-4de3-9172-eee3784add2d"
 }
