@@ -1933,7 +1933,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-02-22T16:29:52.000Z",
+              "updatedAt": "2026-02-24T01:11:37.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -1964,7 +1964,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-22",
+              "lastActiveAt": "2026-02-23",
               "isPending": false
             }
           }
