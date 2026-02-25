@@ -7,7 +7,7 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Validar y Normalizar Entrada",
             "type": "main",
             "index": 0
           }
@@ -16,7 +16,13 @@
     },
     "Create a draft": {
       "main": [
-        []
+        [
+          {
+            "node": "Log Exito",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "DeepSeek Chat Model1": {
@@ -56,7 +62,7 @@
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "IF Error Parseo JSON",
             "type": "main",
             "index": 0
           }
@@ -73,12 +79,80 @@
           }
         ]
       ]
+    },
+    "Validar y Normalizar Entrada": {
+      "main": [
+        [
+          {
+            "node": "IF Entrada Invalida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Entrada Invalida": {
+      "main": [
+        [
+          {
+            "node": "Construir Error Estandar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Error Parseo JSON": {
+      "main": [
+        [
+          {
+            "node": "Construir Error Estandar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Error Estandar": {
+      "main": [
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Exito": {
+      "main": [
+        []
+      ]
+    },
+    "Log Error": {
+      "main": [
+        []
+      ]
     }
   },
-  "createdAt": "2026-02-16T02:06:56.992Z",
-  "description": null,
-  "id": "nEzJiYRTsfIgGdUkut3b5",
-  "isArchived": true,
+  "createdAt": "2026-02-22T22:54:57.682Z",
+  "description": "Version 2 optimizada de radicarPQR: misma lógica funcional, con mejoras de organización, observabilidad y preparación para escalabilidad sin afectar el flujo original.",
+  "id": "fQLAJwwSaQQJF6hI",
+  "isArchived": false,
   "meta": {
     "templateCredsSetupCompleted": true
   },
@@ -94,11 +168,13 @@
       "typeVersion": 1.4,
       "position": [
         -512,
-        -128
+        48
       ],
-      "id": "7c722e4f-97be-426a-bbbc-32f1c47c49ab",
+      "id": "e29c861e-b50d-4a90-9111-de9e04305fcc",
       "name": "When chat message received",
-      "webhookId": "5a5ed2b9-9a6b-4d65-b56e-659290309733"
+      "webhookId": "8c69450f-0760-47a0-939c-4c196a0c6bb3",
+      "notesInFlow": true,
+      "notes": "Disparador del flujo. Recibe mensaje/archivo en el chat y crea el item de entrada para el procesamiento."
     },
     {
       "parameters": {
@@ -113,23 +189,25 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        416,
-        -128
+        1104,
+        -64
       ],
-      "id": "38e6eb79-1b2c-4d02-8790-6db83ff0fc36",
+      "id": "66632e4c-ff09-4f84-993e-49299b5ba176",
       "name": "Create a draft",
-      "webhookId": "3a8b2a65-a47d-45fa-b0ec-9bc0b1860e63",
+      "webhookId": "3cd78b60-7cd7-49f6-b6b1-7fdc7b44f789",
+      "notesInFlow": true,
       "credentials": {
         "gmailOAuth2": {
           "id": "E6A3o0KS4UfkMlS3",
           "name": "Gmail account"
         }
-      }
+      },
+      "notes": "Crea borrador de correo en Gmail usando asunto/cuerpo/para y plantilla HTML corporativa."
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.files[0] }}",
+        "text": "=={{ $json.csv_crudo }}.",
         "options": {
           "systemMessage": "# PERSONA\nEspecialista en PQR de Akienvio SAS. Tu tarea es convertir una línea de datos CSV en un JSON de correo formal, extiende la redaccion de la PQR y utiliza un tono formal, juridico, sin inverntar hechos y concervando la informacion original del cvs en cuanto detalles de numero de guia y fechas\n\n# REGLAS DE FORMATO\n- **Entrada:** Recibirás los datos en formato CSV (Cabecera + Fila).\n- **Salida:** Responde ÚNICAMENTE con un objeto JSON estructurado: {\"para\": \"...\", \"asunto\": \"...\", \"cuerpo\": \"...\", \"guia\": \"...\"}.\n- ** No es necesario la inclusion de firma al final del \"cuerpo\" dado que se usa una plantilla para el envio del correo que ya la incluye\n\n# INSTRUCCIONES DE FORMATO HTML\n- El campo \"cuerpo\" debe ser redactado en formato HTML.\n- Usa la etiqueta `<p>` para párrafos y `<br>` para saltos de línea sencillos.\n- Usa `<strong>` para resaltar datos clave (número de guía, fechas, leyes).\n\n\n# MAPEO DE ENTRADA\nUtiliza estos campos del cvs para redactar:\n- `paqueteria`: Nombre de la transportadora (ej. Coordinadora, servientrega). utilizar el que aparezca en el cvs\n- `guia`: Identificador del paquete debe aparecer en el texto de la PQR y no pude ser cambiado o moficicado bajo ninguna condicion.\n- `tipoPQR`: Motivo (ej. guiaRetrasado, guiaMalEntregado).\n- `descrpcionPaquete` & `contextoPQR`: Detalles para el cuerpo del mensaje.\n- `ultimoMovimiento`: Fecha clave para reclamar retrasos.\n- `anexos`: Menciona que se adjuntan pruebas si este campo contiene información.\n\n# EJEMPLOS DE REFERENCIA\n\n## Ejemplo 1 (Retraso)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352524698,guiaRetrasado,jorgeptn@gmail.com,06/02/2026,paquete sin movimiento\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"Agilización de entrega - Guía 75352524698\",\"cuerpo\":\"Equipo Coordinadora,\\n\\nEl paquete 75352524698 presenta retraso desde el 06/02/2026. Solicitamos escalamiento urgente y fecha estimada.\\n\\nAtentamente,\\nSoporte Akienvio\",\"guia\":\"75352524698\"}\n\n## Ejemplo 2 (Legal/Mal Entregado)\n**Entrada CSV:**\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nCoordinadora,75352519478,guiaMalEntregado,jorgeptn@gmail.com,06/02/2026,entrega irregular citofono no porteria\n**Salida:**\n{\"para\":\"jorgeptn@gmail.com\",\"asunto\":\"PQR Entrega Irregular - Guía 75352519478\",\"cuerpo\":\"Señores Coordinadora,\\n\\nAkienvio SAS (NIT 901702784) radica PQR por entrega irregular de la guía 75352519478. El cliente no recibió el paquete. Citamos Art. 25 Ley 1369/2009 y Res. 3038/2011. Exigimos indemnización o entrega correcta.\\n\\nNotificaciones: soporte@akienvio.co\\n\\nAtentamente,\\nAkienvio SAS\",\"guia\":\"75352519478\"}\n\n# TAREA ACTUAL\nProcesa esta línea CSV:\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\nGenera las PQR en el formato JSON structurado\n\n# TAREA ACTUAL\nGenera el JSON de la PQR para los siguientes datos extraídos de la fila actual del archivo:\n\npaqueteria,guia,tipoPQR,correo,ultimoMovimiento,contextoPQR\n\n\n"
         }
@@ -137,11 +215,13 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -288,
-        -128
+        160,
+        -80
       ],
-      "id": "862709df-364b-4949-89d0-97f2bc41fe60",
-      "name": "AI Agent"
+      "id": "f79b0b4c-029c-47e7-82c4-49ba739e8529",
+      "name": "AI Agent",
+      "notesInFlow": true,
+      "notes": "Genera la PQR en formato JSON estructurado (para, asunto, cuerpo, guia) a partir de la entrada normalizada y el prompt de negocio."
     },
     {
       "parameters": {
@@ -153,17 +233,19 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
       "typeVersion": 1,
       "position": [
-        -272,
-        96
+        176,
+        144
       ],
-      "id": "e166373b-8d35-4be2-8121-a3afe24c6296",
+      "id": "d27506c9-549d-4c71-9117-5c8739531281",
       "name": "DeepSeek Chat Model1",
+      "notesInFlow": true,
       "credentials": {
         "deepSeekApi": {
           "id": "JOgBNw5EPOWd1rXO",
           "name": "DeepSeekPQRRadicador"
         }
-      }
+      },
+      "notes": "Modelo LLM usado por el agente IA para redactar y estructurar la respuesta."
     },
     {
       "parameters": {
@@ -173,11 +255,13 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -160,
-        32
+        304,
+        144
       ],
-      "id": "04d8f316-000f-49dc-9127-18ac7d0d3ee0",
-      "name": "Simple Memory"
+      "id": "f7043d0a-2868-45a8-a7d2-de8152d47a78",
+      "name": "Simple Memory",
+      "notesInFlow": true,
+      "notes": "Memoria de contexto por sesión para mantener consistencia conversacional del agente."
     },
     {
       "parameters": {
@@ -187,13 +271,15 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        -128
+        512,
+        -80
       ],
-      "id": "327b0baa-2950-4eda-aade-3e32cc3c0c64",
+      "id": "77075e0b-0863-42d1-a1af-803039129fb6",
       "name": "Code in JavaScript",
       "executeOnce": false,
-      "alwaysOutputData": false
+      "alwaysOutputData": false,
+      "notesInFlow": true,
+      "notes": "Limpia y parsea la salida del agente IA; convierte texto/JSON en una estructura uniforme bajo la propiedad correos."
     },
     {
       "parameters": {
@@ -203,17 +289,216 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        176,
-        -128
+        912,
+        -64
       ],
-      "id": "64a48f4d-3af2-431d-b45a-4b53f03d3497",
-      "name": "Split Out"
+      "id": "b0bca724-8120-4cd7-8e31-4c12a6cee7b4",
+      "name": "Split Out",
+      "notesInFlow": true,
+      "notes": "Divide el arreglo correos en items individuales para procesar y crear un draft por cada correo."
+    },
+    {
+      "parameters": {
+        "jsCode": "let result = [];\n\nfor (const item of $input.all()) {\n    const input = item.json;\n    let csvContent = \"\";\n    \n    // 1. Extraer el texto del archivo binario\n    const binaryKey = item.binary ? Object.keys(item.binary)[0] : null;\n    if (binaryKey) {\n        const base64Data = item.binary[binaryKey].data;\n        csvContent = Buffer.from(base64Data, 'base64').toString('utf8');\n    }\n\n    const mensaje = (input.mensaje ?? input.texto ?? csvContent ?? '').toString().trim();\n\n    if (!mensaje) {\n        result.push({ json: { __route: 'error', ok: false, errorMessage: 'Archivo vacío o sin mensaje', executionId: $execution.id } });\n        continue;\n    }\n\n    // 2. Si hay CSV, lo dividimos por filas\n    if (csvContent) {\n        // Separamos por saltos de línea y filtramos líneas en blanco\n        const lines = csvContent.split(/\\r?\\n/).filter(line => line.trim() !== '');\n        \n        // Verificamos que tenga al menos cabecera y 1 fila de datos\n        if (lines.length > 1) {\n            const headers = lines[0]; // Guardamos la primera línea como cabecera\n            \n            // Iteramos desde la línea 1 (omitiendo la cabecera)\n            for (let i = 1; i < lines.length; i++) {\n                const fila = lines[i];\n                \n                // Creamos un nuevo elemento (item) para n8n por cada fila\n                result.push({\n                    json: {\n                        ...input,\n                        // Aquí creamos el mini-CSV perfecto para tu Agente IA\n                        csv_crudo: headers + \"\\n\" + fila, \n                        numero_fila: i, // Útil para trazabilidad\n                        ok: true,\n                        __route: 'ok',\n                        executionId: $execution.id\n                    }\n                });\n            }\n            continue; // Pasamos al siguiente item de entrada\n        }\n    }\n    \n    // 3. Fallback si es solo texto normal o un CSV de una sola línea\n    result.push({ \n        json: { \n            ...input, \n            csv_crudo: csvContent, \n            ok: true, \n            __route: 'ok',\n            executionId: $execution.id \n        } \n    });\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        48
+      ],
+      "id": "2d00a023-75e2-4b48-83f6-a26343b86734",
+      "name": "Validar y Normalizar Entrada",
+      "notesInFlow": true,
+      "notes": "Valida que exista contenido de entrada (mensaje/texto/archivo), normaliza espacios y agrega metadatos de trazabilidad (executionId, receivedAt, version)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "fe3b671c-1db0-42bb-9b1f-cc3f40197f93",
+              "leftValue": "={{ $json.__route }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        48
+      ],
+      "id": "b5a8aa64-1f7b-4891-b720-05eb884ac2cf",
+      "name": "IF Entrada Invalida",
+      "notesInFlow": true,
+      "notes": "Enruta según validación inicial: si la entrada es inválida, envía a manejo de error; si es válida, continúa al agente IA."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8246f78f-db21-4eb0-8549-7b14a516c401",
+              "leftValue": "={{ $json.error ? \"error\" : \"ok\" }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "7ed648d1-5eca-4771-9443-22fe61ea35c2",
+      "name": "IF Error Parseo JSON",
+      "notesInFlow": true,
+      "notes": "Verifica si hubo error al parsear JSON. Si hay error, enrutamiento a salida de error; si no, continúa al split de correos."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { status:'error', workflow:'radicarPQR v2 optimizado', node:$json.node || $json.nodeName || 'unknown', executionId: $json.executionId || $execution.id, errorMessage: $json.error?.message || $json.mensaje_error || $json.errorMessage || 'Unhandled error', input:$json, finishedAt:new Date().toISOString() } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        176
+      ],
+      "id": "0bcf80f3-d58a-434a-aae7-6d31b212c45d",
+      "name": "Construir Error Estandar",
+      "notesInFlow": true,
+      "notes": "Construye un payload de error uniforme con workflow, node, executionId, mensaje de error e input para facilitar soporte."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { ...$json, log: { status:'success', workflow:'radicarPQR v2 optimizado', executionId: $json.executionId || $execution.id, startedAt: $json.receivedAt || null, finishedAt: new Date().toISOString(), workflowVersion:'v2' } } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -64
+      ],
+      "id": "99c285ea-80f1-4c1f-aee3-e9258b6a955d",
+      "name": "Log Exito",
+      "notesInFlow": true,
+      "notes": "Registra metadatos finales de éxito (timestamps, executionId, versión) para trazabilidad."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { ...$json, log: { status:'error', workflow:'radicarPQR v2 optimizado', executionId: $json.executionId || $execution.id, finishedAt: new Date().toISOString(), workflowVersion:'v2' } } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        176
+      ],
+      "id": "ff0bcb8a-3d1f-4155-9aed-259d71f8df7d",
+      "name": "Log Error",
+      "notesInFlow": true,
+      "notes": "Registra metadatos finales de error para auditoría y diagnóstico."
+    },
+    {
+      "parameters": {
+        "content": "## 1) Entrada y validación\n- **When chat message received**: dispara el flujo con mensaje/archivo.\n- **Validar y Normalizar Entrada**: valida campos mínimos, normaliza texto y agrega trazabilidad (`executionId`, `receivedAt`, `workflowVersion`).\n- **IF Entrada Invalida**: enruta a error si no hay entrada válida; si está OK, continúa a IA.",
+        "height": 224,
+        "width": 560,
+        "color": 7
+      },
+      "id": "4b70d1cd-f129-4b5d-b583-38fb3b727483",
+      "name": "DOC - Entrada y validación",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2) Generación IA\n- **AI Agent**: transforma la entrada a JSON de PQR (`para`, `asunto`, `cuerpo`, `guia`).\n- **DeepSeek Chat Model1**: modelo LLM de redacción/estructura.\n- **Simple Memory**: contexto por sesión para coherencia.",
+        "height": 220,
+        "width": 520,
+        "color": 4
+      },
+      "id": "19f1b8bf-5ae3-4cf1-a243-505089e8405e",
+      "name": "DOC - Generación IA",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3) Parseo y preparación\n- **Code in JavaScript**: limpia la salida del agente y parsea JSON.\n- **IF Error Parseo JSON**: detecta fallos de parseo y redirige a manejo de error.\n- **Split Out**: separa `correos[]` en items individuales para envío.",
+        "height": 214,
+        "width": 560,
+        "color": 5
+      },
+      "id": "74e01aaf-cb64-4c8b-8638-f57246615e3d",
+      "name": "DOC - Parseo y preparación de salida",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        464,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 4) Salida y observabilidad\n- **Create a draft**: crea borrador Gmail con plantilla HTML corporativa.\n- **Log Exito**: registra estado exitoso con trazabilidad.\n- **Construir Error Estandar** + **Log Error**: formato único de error para auditoría/soporte.",
+        "height": 214,
+        "width": 568,
+        "color": 6
+      },
+      "id": "51506803-43d1-4995-9974-bc75cc7da2e2",
+      "name": "DOC - Salida y observabilidad",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        -368
+      ]
     }
   ],
   "pinData": {},
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": true,
+    "availableInMCP": false,
     "timeSavedMode": "fixed",
     "saveDataErrorExecution": "all",
     "saveDataSuccessExecution": "all",
@@ -222,10 +507,10 @@
   },
   "shared": [
     {
-      "updatedAt": "2026-02-16T02:06:57.000Z",
-      "createdAt": "2026-02-16T02:06:57.000Z",
+      "updatedAt": "2026-02-22T22:54:57.690Z",
+      "createdAt": "2026-02-22T22:54:57.690Z",
       "role": "workflow:owner",
-      "workflowId": "nEzJiYRTsfIgGdUkut3b5",
+      "workflowId": "fQLAJwwSaQQJF6hI",
       "projectId": "E56trdgxInvxGA6Y",
       "project": {
         "updatedAt": "2026-01-12T22:50:30.978Z",
@@ -243,7 +528,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-02-24T01:11:37.000Z",
+              "updatedAt": "2026-02-24T14:08:46.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -274,7 +559,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-23",
+              "lastActiveAt": "2026-02-24",
               "isPending": false
             }
           }
@@ -285,7 +570,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-02-23T01:39:19.000Z",
-  "versionCounter": 45,
-  "versionId": "e2ee5ebb-8227-4117-b1a6-b9835643fb4e"
+  "updatedAt": "2026-02-23T02:13:34.648Z",
+  "versionCounter": 56,
+  "versionId": "1df6e4bb-f309-4230-b053-e07b0407f663"
 }
