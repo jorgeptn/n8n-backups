@@ -1,0 +1,2050 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-03T02:44:00.000Z",
+    "createdAt": "2026-03-03T02:41:16.297Z",
+    "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+    "workflowId": "ZfNMbedDU6HxUWsS",
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "id": "c055762a-8fe7-4141-a639-df2372f30060",
+        "typeVersion": 1.1,
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          1136,
+          416
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## Entrada de Data desde canal Addres-Notafication\n",
+          "height": 224,
+          "width": 928
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1024,
+          352
+        ],
+        "id": "cf579888-678a-44a2-a333-5c6460c42aca",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1. Obtenemos el objeto principal que llega de Slack en n8n\nconst input = $input.all()[0].json;\n\n// 2. Buscamos el texto donde está la información completa.\n// En los mensajes modernos de Slack, los detalles están dentro de \"blocks\"\nlet textoBruto = \"\";\n\nif (input.blocks && input.blocks.length > 1 && input.blocks[1].text) {\n  // Tomamos el texto del segundo bloque que contiene todos los datos\n  textoBruto = input.blocks[1].text.text; \n} else if (input.text) {\n  textoBruto = input.text;\n}\n\n// 3. Función para extraer el valor después de cada etiqueta\nconst extraerDato = (etiqueta) => {\n  const regex = new RegExp(`${etiqueta}:\\\\s*([^\\n\\r]+)`, 'i');\n  const coincidencia = textoBruto.match(regex);\n  return coincidencia ? coincidencia[1].trim() : \"\";\n};\n\n// 4. Limpiamos los correos (Slack los envía como <mailto:correo|correo>)\nconst limpiarCorreo = (correoSucio) => {\n  if (!correoSucio) return \"\";\n  const match = correoSucio.match(/mailto:([^|>]+)/);\n  return match ? match[1] : correoSucio.replace(/[<>*]/g, \"\").trim();\n};\n\n// 5. Extraemos las variables necesarias para hacer las uniones\nconst aliasExtraido = extraerDato(\"Alias\");\nconst direccionBase = extraerDato(\"Dirección\");\nconst apto = extraerDato(\"Apto/Casa/Otro\");\n\n// 6. Construimos el resultado final con el formato exacto solicitado\nconst resultado = {\n  empresa: aliasExtraido ? `AKIENVIO S.A.S/ ${aliasExtraido}` : \"AKIENVIO S.A.S\",\n  id_sucursal: \"\", // Queda básico/vacío\n  nit: \"901702784-7\",\n  contacto: \"\", // Queda vacío\n  telefono: extraerDato(\"Teléfono\"),\n  direccion: `${direccionBase} ${apto}`.trim(), // Se juntan con un espacio, sin guiones\n  ciudad: extraerDato(\"Ciudad\"),\n  email: limpiarCorreo(extraerDato(\"Usuario\")) // Extrae \"soporte@akienvio.co\" de la línea Usuario\n};\n\n// Devolvemos el array de objetos como lo espera n8n\nreturn [resultado];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1392,
+          416
+        ],
+        "id": "298cde9f-98b2-42fa-994d-026357479d20",
+        "name": "JavaScript: Transformar Data"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+            "mode": "list",
+            "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 139350032,
+            "mode": "list",
+            "cachedResultName": "Copia de  GEC-COR-R-07",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "NOMBRE DE LA EMPRESA": "={{ $json.empresa }}",
+              "NIT": "901702784",
+              "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "Jorge Enrique Patiño Perez",
+              "TELÉFONO": "={{ $json.telefono }}",
+              "DIRECCIÓN": "={{ $json.direccion }}",
+              "CIUDAD PRESTACIÓN SERVICIO": "={{ $json.ciudad }}",
+              "E-MAIL": "={{ $json.email }}",
+              "PERSONA RESPONSABLE DEL PAGO": "JORGE ENRIQUE PATIÑO PEREZ",
+              "HORARIO DE RECOGIDA": "ESPORADICA",
+              "¿ENVIADO POR CORREO?": "NO"
+            },
+            "matchingColumns": [
+              "HORARIO DE RECOGIDA"
+            ],
+            "schema": [
+              {
+                "id": "NOMBRE DE LA EMPRESA",
+                "displayName": "NOMBRE DE LA EMPRESA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ID SUCURSAL",
+                "displayName": "ID SUCURSAL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "NIT",
+                "displayName": "NIT",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+                "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "TELÉFONO",
+                "displayName": "TELÉFONO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "DIRECCIÓN",
+                "displayName": "DIRECCIÓN",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "CIUDAD PRESTACIÓN SERVICIO",
+                "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "E-MAIL",
+                "displayName": "E-MAIL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "PERSONA RESPONSABLE DEL PAGO",
+                "displayName": "PERSONA RESPONSABLE DEL PAGO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "HORARIO DE RECOGIDA",
+                "displayName": "HORARIO DE RECOGIDA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "¿ENVIADO POR CORREO?",
+                "displayName": "¿ENVIADO POR CORREO?",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {
+            "cellFormat": "USER_ENTERED"
+          }
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1664,
+          416
+        ],
+        "id": "7a0590a8-e107-4c27-8189-aa99d1a02407",
+        "name": "Incluir Data en Fila de archivo",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sendTo": "jorgeptn@gmail.com",
+          "subject": "=APROBACIÓN REQUERIDA: {{ $('Copy file1').item.json.name }}",
+          "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600;\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n\n        /* Estilos para los botones de acción */\n        .button-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n\n        .btn {\n            display: inline-block;\n            padding: 12px 20px;\n            text-decoration: none;\n            border-radius: 6px;\n            font-weight: bold;\n            font-size: 14px;\n            margin: 5px;\n            transition: opacity 0.2s;\n        }\n\n        .btn-approve { background-color: #4CAF50; color: #ffffff !important; }\n        .btn-reject { background-color: #f44336; color: #ffffff !important; }\n        \n        .footer-note {\n            font-size: 12px;\n            color: #a0aec0;\n            text-align: center;\n            padding: 15px;\n            font-style: italic;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n                    Autorizaci&oacute;n de Env&iacute;o\n                    <span class=\"company-subtitle\">Akienvio SAS - Sistema de Gesti&oacute;n</span>\n                </div>\n                \n                <p>Hola, <strong>Jorge</strong>.</p>\n                \n                <p>El flujo autom&aacute;tico ha generado el archivo de sucursales adjunto en este correo. Por favor, rev&iacute;salo y confirma si podemos proceder con el env&iacute;o a <span class=\"highlight\">Inter Rapid&iacute;simo</span>.</p>\n                \n                <div class=\"button-container\">\n                    <a href=\"{{$execution.resumeUrl}}?decision=aprobar\" class=\"btn btn-approve\">✔️ APROBAR ENV&Iacute;O</a>\n                    <a href=\"{{$execution.resumeUrl}}?decision=rechazar\" class=\"btn btn-reject\">❌ RECHAZAR</a>\n                </div>\n\n                <p>Quedamos a la espera de tu acci&oacute;n para continuar con el proceso.</p>\n            </div>\n\n            <div class=\"footer-note\">\n                Este es un mensaje automatizado generado por el sistema AkiBot.\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+          "options": {
+            "appendAttribution": false,
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {}
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          2592,
+          944
+        ],
+        "id": "551867a1-b9bd-45ab-95b6-b244589d7bd5",
+        "name": "Solicitar Aprobación",
+        "executeOnce": true,
+        "webhookId": "37b96c0e-8ea1-428b-ab87-ab79c28e4f14",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "E6A3o0KS4UfkMlS3",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resume": "webhook",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2784,
+          944
+        ],
+        "id": "b9b06412-a65b-4b10-b3c6-f34579edfd21",
+        "name": "Wait for Approval",
+        "webhookId": "d571f645-d6bf-42cb-bbe0-f0e768e41d4c"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "condicion-aprobacion",
+                "leftValue": "={{ $json.query.decision }}",
+                "rightValue": "aprobar",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2992,
+          944
+        ],
+        "id": "5cc82dd3-07a9-4acf-a9fe-d1316339a398",
+        "name": "Verificar Aprobación"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Tras pausarse el flujo por el webhook, recuperamos el archivo de la memoria\nreturn $('Download file1').all();"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3184,
+          944
+        ],
+        "id": "d4d55fff-dc6c-4058-8ce0-d85d81131788",
+        "name": "Recuperar Archivo"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 17
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          1040,
+          1040
+        ],
+        "id": "e54654c3-60f1-4e93-9476-00502cba2653",
+        "name": "Schedule Trigger1"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+            "mode": "list",
+            "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 139350032,
+            "mode": "list",
+            "cachedResultName": "Copia de  GEC-COR-R-07",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "¿ENVIADO POR CORREO?",
+                "lookupValue": "NO"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1264,
+          1040
+        ],
+        "id": "28b47c44-fab2-4dae-b033-deb1c9cd11bf",
+        "name": "Get row(s) in sheet1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "copy",
+          "fileId": {
+            "__rl": true,
+            "value": "1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU",
+            "mode": "list",
+            "cachedResultName": "plantillaSucursales",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU/edit?usp=drivesdk"
+          },
+          "name": "=AKIENVIO S.A.S SUCURSALES {{$now.toFormat('dd.MM.yyyy')}}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1712,
+          944
+        ],
+        "id": "b5d8cfd0-5c96-485b-ae62-3f234a13d6ff",
+        "name": "Copy file1",
+        "executeOnce": true,
+        "alwaysOutputData": false,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "Jt9zaytK5uu24AB1",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "41093930-21fe-4fc3-bf5e-ccd7ed98c35c",
+                "leftValue": "={{ $input.all().length > 0\n}})",
+                "rightValue": 0,
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1488,
+          1040
+        ],
+        "id": "a677582d-ab19-4bf8-9078-b67969ed653a",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Esto vuelve a traer al flujo todos los datos de la consulta original\nreturn $('Get row(s) in sheet1').all();"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1936,
+          944
+        ],
+        "id": "7137f8ba-87e4-418b-b9bd-0cf998943c0f",
+        "name": "Code in JavaScript2"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "={{ $item(0).$node[\"Copy file1\"].json[\"id\"] }}",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1745303911,
+            "mode": "list",
+            "cachedResultName": "Copia de  GEC-COR-R-07",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xj5j1KmZn2TDQiLdkukfk4GdorrJxKNiaguMmGeKNgY/edit#gid=1745303911"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "NOMBRE DE LA EMPRESA": "={{ $('Get row(s) in sheet1').item.json['NOMBRE DE LA EMPRESA'] }}",
+              "NIT": "={{ $('Get row(s) in sheet1').item.json.NIT }}",
+              "PERSONA RESPONSABLE DEL PAGO": "={{ $('Get row(s) in sheet1').item.json['PERSONA RESPONSABLE DEL PAGO'] }}",
+              "HORARIO DE RECOGIDA": "={{ $('Get row(s) in sheet1').item.json['HORARIO DE RECOGIDA'] }}",
+              "E-MAIL": "={{ $('Get row(s) in sheet1').item.json['E-MAIL'] }}",
+              "CIUDAD PRESTACIÓN SERVICIO": "={{ $('Get row(s) in sheet1').item.json['CIUDAD PRESTACIÓN SERVICIO'] }}",
+              "DIRECCIÓN": "={{ $('Get row(s) in sheet1').item.json['DIRECCIÓN'] }}",
+              "TELÉFONO": "={{ $('Get row(s) in sheet1').item.json['TELÉFONO'] }}",
+              "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $('Get row(s) in sheet1').item.json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "NOMBRE DE LA EMPRESA",
+                "displayName": "NOMBRE DE LA EMPRESA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ID SUCURSAL",
+                "displayName": "ID SUCURSAL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "NIT",
+                "displayName": "NIT",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+                "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "TELÉFONO",
+                "displayName": "TELÉFONO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "DIRECCIÓN",
+                "displayName": "DIRECCIÓN",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "CIUDAD PRESTACIÓN SERVICIO",
+                "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "E-MAIL",
+                "displayName": "E-MAIL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "PERSONA RESPONSABLE DEL PAGO",
+                "displayName": "PERSONA RESPONSABLE DEL PAGO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "HORARIO DE RECOGIDA",
+                "displayName": "HORARIO DE RECOGIDA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2160,
+          944
+        ],
+        "id": "09243b58-5d1d-412b-b99d-30e3c61cc422",
+        "name": "Append row in sheet",
+        "executeOnce": false,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $('Copy file1').item.json.id }}",
+            "mode": "id"
+          },
+          "options": {
+            "binaryPropertyName": "data",
+            "googleFileConversion": {
+              "conversion": {
+                "docsToFormat": "application/pdf",
+                "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              }
+            },
+            "fileName": "=SUCURSALES AKIENVIO S.A.S {{ $today.toFormat('dd-MM-yyyy') }}.xlsx"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          2384,
+          944
+        ],
+        "id": "181e7565-77f9-4412-99a6-b33dbbbebf14",
+        "name": "Download file1",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "Jt9zaytK5uu24AB1",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sendTo": "jorgeptn@gmail.com;Ejecutivodepuntos.bogota@interrapidisimo.com;supervisor.clientescorporativos@interrapidisimo.com;auxiliar.canales2@interrapidisimo.com;coordinador.ventascorporativas1@interrapidisimo.com;subgerente.cuentasclave@interrapidisimo.com;supervisor.clientescorporativos1@interrapidisimo.com;supervisor.puntosmoviles3@interrapidisimo.com",
+          "subject": "={{ $('Copy file1').item.json.name }}",
+          "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n                    Creaci&oacute;n de Sucursales\n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                \n                <p>Buen d&iacute;a, <strong>Kevin</strong>.</p>\n                \n                <p>Esperamos que te encuentres muy bien.</p>\n                \n                <p>Te hacemos entrega del archivo adjunto necesario para la <span class=\"highlight\">creaci&oacute;n de las sucursales</span>. Te agradecemos procesar esta informaci&oacute;n para poner al d&iacute;a los registros que tenemos pendientes.</p>\n                \n                <p>Cualquier duda adicional que surja durante el proceso, quedamos atentos para apoyarte de inmediato.</p>\n            </div>\n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 3203453744</p>\n                <p class=\"sig-role\">Director de Operaciones</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+          "options": {
+            "appendAttribution": false,
+            "attachmentsUi": {
+              "attachmentsBinary": [
+                {
+                  "property": "=data"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          3392,
+          944
+        ],
+        "id": "6adb637a-00cd-4d15-b804-dd611cb52e63",
+        "name": "Send a message1",
+        "webhookId": "91b3ada4-1783-4c3f-9618-919eab1458f2",
+        "executeOnce": true,
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "E6A3o0KS4UfkMlS3",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Esto vuelve a traer al flujo todos los datos de la consulta original\nreturn $('Get row(s) in sheet1').all();"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3584,
+          944
+        ],
+        "id": "d418c568-2b6f-4246-a44d-85aab1bdfef7",
+        "name": "Code in JavaScript3"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+            "mode": "list",
+            "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 139350032,
+            "mode": "list",
+            "cachedResultName": "Copia de  GEC-COR-R-07",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "row_number": "={{ $json.row_number }}",
+              "¿ENVIADO POR CORREO?": "SI"
+            },
+            "matchingColumns": [
+              "row_number"
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          3776,
+          944
+        ],
+        "id": "1cea7ee0-4efc-4fe2-8852-4dbc0661cf90",
+        "name": "Update row in sheet1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1712,
+          1136
+        ],
+        "id": "d4165172-290a-4f3c-83a1-cea334891efa",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "content": "## Activación del Flujo y Filtrado\n**Ejecución Programada:** El flujo se activa automáticamente a las 17:00 hrs. En esta etapa, el sistema consulta la base de datos y filtra los nuevos registros correspondientes a las sucursales que se encuentran pendientes de inscripción.",
+          "height": 240,
+          "width": 656,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1008,
+          592
+        ],
+        "typeVersion": 1,
+        "id": "f061a8eb-bdef-47a3-8051-697e71f58532",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "content": "## Generación de Documento\nEl sistema clona el archivo maestro `plantillaSucursales` y lo renombra dinámicamente utilizando la fecha de ejecución. A continuación, consolida e inserta de forma automática la información detallada de todas las sucursales pendientes dentro de esta nueva hoja de cálculo.",
+          "height": 240,
+          "width": 736,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1696,
+          592
+        ],
+        "typeVersion": 1,
+        "id": "e034a51f-6394-4ca9-873b-5754a01137d2",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "content": "## Envio de informacion por Email\n",
+          "height": 480,
+          "width": 2976,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1008,
+          864
+        ],
+        "id": "348d29e5-10ae-498c-89bd-ca54cbcfa130",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "## Correos de destino \njorgeptn@gmail.com;Ejecutivodepuntos.bogota@interrapidisimo.com;supervisor.clientescorporativos@interrapidisimo.com;auxiliar.canales2@interrapidisimo.com;coordinador.ventascorporativas1@interrapidisimo.com;subgerente.cuentasclave@interrapidisimo.com;supervisor.clientescorporativos1@interrapidisimo.com;supervisor.puntosmoviles3@interrapidisimo.com",
+          "height": 96,
+          "width": 1504,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2464,
+          736
+        ],
+        "typeVersion": 1,
+        "id": "b865ac89-9077-4d8a-8319-7f961a1acd53",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## Aprobación y Distribución\nSe envía un correo de validación con el archivo Excel adjunto, el cual incluye botones de acción interactivos para \"Aprobar\" o \"Rechazar\" el proceso. Una vez aprobado, el sistema despacha un correo corporativo al equipo de Inter Rapidísimo (con copias internas) para hacer la entrega oficial del documento autorizado.\n\nPara finalizar, el flujo itera sobre el identificador `row_number` de cada registro en el archivo maestro original, actualizando el estado de la columna `¿ENVIADO POR CORREO?` a \"SI\" y cerrando así el ciclo operativo.",
+          "height": 128,
+          "width": 1504,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2464,
+          592
+        ],
+        "typeVersion": 1,
+        "id": "114abc03-545e-4cfa-8cd1-7e5d2d70e27a",
+        "name": "Sticky Note5"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "JavaScript: Transformar Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JavaScript: Transformar Data": {
+        "main": [
+          [
+            {
+              "node": "Incluir Data en Fila de archivo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Solicitar Aprobación": {
+        "main": [
+          [
+            {
+              "node": "Wait for Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait for Approval": {
+        "main": [
+          [
+            {
+              "node": "Verificar Aprobación",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verificar Aprobación": {
+        "main": [
+          [
+            {
+              "node": "Recuperar Archivo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recuperar Archivo": {
+        "main": [
+          [
+            {
+              "node": "Send a message1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger1": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet1": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Copy file1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Copy file1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript2": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [
+            {
+              "node": "Download file1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file1": {
+        "main": [
+          [
+            {
+              "node": "Solicitar Aprobación",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send a message1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript3": {
+        "main": [
+          [
+            {
+              "node": "Update row in sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "jorge Patino",
+    "name": "Version a06f7443",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-03T02:44:00.436Z",
+        "id": 42,
+        "workflowId": "ZfNMbedDU6HxUWsS",
+        "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+        "event": "activated",
+        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
+      }
+    ]
+  },
+  "activeVersionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "JavaScript: Transformar Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JavaScript: Transformar Data": {
+      "main": [
+        [
+          {
+            "node": "Incluir Data en Fila de archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar Aprobación": {
+      "main": [
+        [
+          {
+            "node": "Wait for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Approval": {
+      "main": [
+        [
+          {
+            "node": "Verificar Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Aprobación": {
+      "main": [
+        [
+          {
+            "node": "Recuperar Archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recuperar Archivo": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Copy file1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Solicitar Aprobación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-03T02:24:23.247Z",
+  "description": null,
+  "id": "ZfNMbedDU6HxUWsS",
+  "isArchived": false,
+  "meta": null,
+  "name": "flujoCreacionSucursalRouter",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        1136,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Entrada de Data desde canal Addres-Notafication\n",
+        "height": 224,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        352
+      ],
+      "id": "cf579888-678a-44a2-a333-5c6460c42aca",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos el objeto principal que llega de Slack en n8n\nconst input = $input.all()[0].json;\n\n// 2. Buscamos el texto donde está la información completa.\n// En los mensajes modernos de Slack, los detalles están dentro de \"blocks\"\nlet textoBruto = \"\";\n\nif (input.blocks && input.blocks.length > 1 && input.blocks[1].text) {\n  // Tomamos el texto del segundo bloque que contiene todos los datos\n  textoBruto = input.blocks[1].text.text; \n} else if (input.text) {\n  textoBruto = input.text;\n}\n\n// 3. Función para extraer el valor después de cada etiqueta\nconst extraerDato = (etiqueta) => {\n  const regex = new RegExp(`${etiqueta}:\\\\s*([^\\n\\r]+)`, 'i');\n  const coincidencia = textoBruto.match(regex);\n  return coincidencia ? coincidencia[1].trim() : \"\";\n};\n\n// 4. Limpiamos los correos (Slack los envía como <mailto:correo|correo>)\nconst limpiarCorreo = (correoSucio) => {\n  if (!correoSucio) return \"\";\n  const match = correoSucio.match(/mailto:([^|>]+)/);\n  return match ? match[1] : correoSucio.replace(/[<>*]/g, \"\").trim();\n};\n\n// 5. Extraemos las variables necesarias para hacer las uniones\nconst aliasExtraido = extraerDato(\"Alias\");\nconst direccionBase = extraerDato(\"Dirección\");\nconst apto = extraerDato(\"Apto/Casa/Otro\");\n\n// 6. Construimos el resultado final con el formato exacto solicitado\nconst resultado = {\n  empresa: aliasExtraido ? `AKIENVIO S.A.S/ ${aliasExtraido}` : \"AKIENVIO S.A.S\",\n  id_sucursal: \"\", // Queda básico/vacío\n  nit: \"901702784-7\",\n  contacto: \"\", // Queda vacío\n  telefono: extraerDato(\"Teléfono\"),\n  direccion: `${direccionBase} ${apto}`.trim(), // Se juntan con un espacio, sin guiones\n  ciudad: extraerDato(\"Ciudad\"),\n  email: limpiarCorreo(extraerDato(\"Usuario\")) // Extrae \"soporte@akienvio.co\" de la línea Usuario\n};\n\n// Devolvemos el array de objetos como lo espera n8n\nreturn [resultado];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        416
+      ],
+      "id": "298cde9f-98b2-42fa-994d-026357479d20",
+      "name": "JavaScript: Transformar Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NOMBRE DE LA EMPRESA": "={{ $json.empresa }}",
+            "NIT": "901702784",
+            "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "Jorge Enrique Patiño Perez",
+            "TELÉFONO": "={{ $json.telefono }}",
+            "DIRECCIÓN": "={{ $json.direccion }}",
+            "CIUDAD PRESTACIÓN SERVICIO": "={{ $json.ciudad }}",
+            "E-MAIL": "={{ $json.email }}",
+            "PERSONA RESPONSABLE DEL PAGO": "JORGE ENRIQUE PATIÑO PEREZ",
+            "HORARIO DE RECOGIDA": "ESPORADICA",
+            "¿ENVIADO POR CORREO?": "NO"
+          },
+          "matchingColumns": [
+            "HORARIO DE RECOGIDA"
+          ],
+          "schema": [
+            {
+              "id": "NOMBRE DE LA EMPRESA",
+              "displayName": "NOMBRE DE LA EMPRESA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID SUCURSAL",
+              "displayName": "ID SUCURSAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELÉFONO",
+              "displayName": "TELÉFONO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DIRECCIÓN",
+              "displayName": "DIRECCIÓN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CIUDAD PRESTACIÓN SERVICIO",
+              "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "E-MAIL",
+              "displayName": "E-MAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PERSONA RESPONSABLE DEL PAGO",
+              "displayName": "PERSONA RESPONSABLE DEL PAGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HORARIO DE RECOGIDA",
+              "displayName": "HORARIO DE RECOGIDA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "¿ENVIADO POR CORREO?",
+              "displayName": "¿ENVIADO POR CORREO?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1664,
+        416
+      ],
+      "id": "7a0590a8-e107-4c27-8189-aa99d1a02407",
+      "name": "Incluir Data en Fila de archivo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jorgeptn@gmail.com",
+        "subject": "=APROBACIÓN REQUERIDA: {{ $('Copy file1').item.json.name }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600;\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n\n        /* Estilos para los botones de acción */\n        .button-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n\n        .btn {\n            display: inline-block;\n            padding: 12px 20px;\n            text-decoration: none;\n            border-radius: 6px;\n            font-weight: bold;\n            font-size: 14px;\n            margin: 5px;\n            transition: opacity 0.2s;\n        }\n\n        .btn-approve { background-color: #4CAF50; color: #ffffff !important; }\n        .btn-reject { background-color: #f44336; color: #ffffff !important; }\n        \n        .footer-note {\n            font-size: 12px;\n            color: #a0aec0;\n            text-align: center;\n            padding: 15px;\n            font-style: italic;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n                    Autorizaci&oacute;n de Env&iacute;o\n                    <span class=\"company-subtitle\">Akienvio SAS - Sistema de Gesti&oacute;n</span>\n                </div>\n                \n                <p>Hola, <strong>Jorge</strong>.</p>\n                \n                <p>El flujo autom&aacute;tico ha generado el archivo de sucursales adjunto en este correo. Por favor, rev&iacute;salo y confirma si podemos proceder con el env&iacute;o a <span class=\"highlight\">Inter Rapid&iacute;simo</span>.</p>\n                \n                <div class=\"button-container\">\n                    <a href=\"{{$execution.resumeUrl}}?decision=aprobar\" class=\"btn btn-approve\">✔️ APROBAR ENV&Iacute;O</a>\n                    <a href=\"{{$execution.resumeUrl}}?decision=rechazar\" class=\"btn btn-reject\">❌ RECHAZAR</a>\n                </div>\n\n                <p>Quedamos a la espera de tu acci&oacute;n para continuar con el proceso.</p>\n            </div>\n\n            <div class=\"footer-note\">\n                Este es un mensaje automatizado generado por el sistema AkiBot.\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2592,
+        944
+      ],
+      "id": "551867a1-b9bd-45ab-95b6-b244589d7bd5",
+      "name": "Solicitar Aprobación",
+      "executeOnce": true,
+      "webhookId": "37b96c0e-8ea1-428b-ab87-ab79c28e4f14",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E6A3o0KS4UfkMlS3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2784,
+        944
+      ],
+      "id": "b9b06412-a65b-4b10-b3c6-f34579edfd21",
+      "name": "Wait for Approval",
+      "webhookId": "d571f645-d6bf-42cb-bbe0-f0e768e41d4c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "condicion-aprobacion",
+              "leftValue": "={{ $json.query.decision }}",
+              "rightValue": "aprobar",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2992,
+        944
+      ],
+      "id": "5cc82dd3-07a9-4acf-a9fe-d1316339a398",
+      "name": "Verificar Aprobación"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tras pausarse el flujo por el webhook, recuperamos el archivo de la memoria\nreturn $('Download file1').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3184,
+        944
+      ],
+      "id": "d4d55fff-dc6c-4058-8ce0-d85d81131788",
+      "name": "Recuperar Archivo"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        1040
+      ],
+      "id": "e54654c3-60f1-4e93-9476-00502cba2653",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "¿ENVIADO POR CORREO?",
+              "lookupValue": "NO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        1040
+      ],
+      "id": "28b47c44-fab2-4dae-b033-deb1c9cd11bf",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU",
+          "mode": "list",
+          "cachedResultName": "plantillaSucursales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bPMWWtHX3SEOL_z5PjhIE8hGQGPy28-FPmSSbqUE3oU/edit?usp=drivesdk"
+        },
+        "name": "=AKIENVIO S.A.S SUCURSALES {{$now.toFormat('dd.MM.yyyy')}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        944
+      ],
+      "id": "b5d8cfd0-5c96-485b-ae62-3f234a13d6ff",
+      "name": "Copy file1",
+      "executeOnce": true,
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "41093930-21fe-4fc3-bf5e-ccd7ed98c35c",
+              "leftValue": "={{ $input.all().length > 0\n}})",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1488,
+        1040
+      ],
+      "id": "a677582d-ab19-4bf8-9078-b67969ed653a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Esto vuelve a traer al flujo todos los datos de la consulta original\nreturn $('Get row(s) in sheet1').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1936,
+        944
+      ],
+      "id": "7137f8ba-87e4-418b-b9bd-0cf998943c0f",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $item(0).$node[\"Copy file1\"].json[\"id\"] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1745303911,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xj5j1KmZn2TDQiLdkukfk4GdorrJxKNiaguMmGeKNgY/edit#gid=1745303911"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NOMBRE DE LA EMPRESA": "={{ $('Get row(s) in sheet1').item.json['NOMBRE DE LA EMPRESA'] }}",
+            "NIT": "={{ $('Get row(s) in sheet1').item.json.NIT }}",
+            "PERSONA RESPONSABLE DEL PAGO": "={{ $('Get row(s) in sheet1').item.json['PERSONA RESPONSABLE DEL PAGO'] }}",
+            "HORARIO DE RECOGIDA": "={{ $('Get row(s) in sheet1').item.json['HORARIO DE RECOGIDA'] }}",
+            "E-MAIL": "={{ $('Get row(s) in sheet1').item.json['E-MAIL'] }}",
+            "CIUDAD PRESTACIÓN SERVICIO": "={{ $('Get row(s) in sheet1').item.json['CIUDAD PRESTACIÓN SERVICIO'] }}",
+            "DIRECCIÓN": "={{ $('Get row(s) in sheet1').item.json['DIRECCIÓN'] }}",
+            "TELÉFONO": "={{ $('Get row(s) in sheet1').item.json['TELÉFONO'] }}",
+            "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $('Get row(s) in sheet1').item.json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NOMBRE DE LA EMPRESA",
+              "displayName": "NOMBRE DE LA EMPRESA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID SUCURSAL",
+              "displayName": "ID SUCURSAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "displayName": "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TELÉFONO",
+              "displayName": "TELÉFONO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DIRECCIÓN",
+              "displayName": "DIRECCIÓN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CIUDAD PRESTACIÓN SERVICIO",
+              "displayName": "CIUDAD PRESTACIÓN SERVICIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-MAIL",
+              "displayName": "E-MAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PERSONA RESPONSABLE DEL PAGO",
+              "displayName": "PERSONA RESPONSABLE DEL PAGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HORARIO DE RECOGIDA",
+              "displayName": "HORARIO DE RECOGIDA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2160,
+        944
+      ],
+      "id": "09243b58-5d1d-412b-b99d-30e3c61cc422",
+      "name": "Append row in sheet",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Copy file1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          },
+          "fileName": "=SUCURSALES AKIENVIO S.A.S {{ $today.toFormat('dd-MM-yyyy') }}.xlsx"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2384,
+        944
+      ],
+      "id": "181e7565-77f9-4412-99a6-b33dbbbebf14",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jorgeptn@gmail.com;Ejecutivodepuntos.bogota@interrapidisimo.com;supervisor.clientescorporativos@interrapidisimo.com;auxiliar.canales2@interrapidisimo.com;coordinador.ventascorporativas1@interrapidisimo.com;subgerente.cuentasclave@interrapidisimo.com;supervisor.clientescorporativos1@interrapidisimo.com;supervisor.puntosmoviles3@interrapidisimo.com",
+        "subject": "={{ $('Copy file1').item.json.name }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { margin: 0; padding: 0; background-color: #f4f7f6; }\n        .email-wrapper { width: 100%; background-color: #f4f7f6; padding: 25px 0; }\n        \n        .email-container {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            color: #2d3748;\n            line-height: 1.5;\n            max-width: 580px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            overflow: hidden;\n            text-align: left;\n        }\n        \n        .top-accent { background-color: #ED64A6; height: 6px; }\n\n        .body-content { padding: 35px 30px; }\n        \n        /* Título principal en Magenta */\n        .title {\n            color: #ED64A6;\n            font-size: 20px;\n            font-weight: bold;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #fed7e4;\n            padding-bottom: 10px;\n        }\n\n        /* Subtítulo en el mismo Magenta, pero más pequeño (11px) */\n        .company-subtitle {\n            display: block;\n            font-size: 11px;\n            font-weight: 600; /* Un poco de grosor para que se lea bien en magenta */\n            color: #ED64A6;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n        \n        p {\n            font-size: 15px;\n            margin-bottom: 15px;\n        }\n        \n        .highlight { color: #ED64A6; font-weight: 600; }\n        \n        .signature-section {\n            padding: 25px 30px;\n            background-color: #fffafc;\n            border-top: 1px solid #fed7e4;\n        }\n        \n        .sig-name {\n            font-weight: bold;\n            color: #ED64A6;\n            font-size: 17px;\n            margin: 0;\n        }\n        \n        .sig-info {\n            font-size: 13px;\n            color: #4a5568;\n            margin: 2px 0;\n        }\n        \n        .sig-role {\n            font-size: 12px;\n            color: #718096;\n            text-transform: uppercase;\n            letter-spacing: 1px;\n            margin-top: 4px;\n            font-weight: 600;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-container\">\n            <div class=\"top-accent\"></div>\n            \n            <div class=\"body-content\">\n                <div class=\"title\">\n                    Creaci&oacute;n de Sucursales\n                    <span class=\"company-subtitle\">Akienvio SAS - NIT: 9001702784</span>\n                </div>\n                \n                <p>Buen d&iacute;a, <strong>Kevin</strong>.</p>\n                \n                <p>Esperamos que te encuentres muy bien.</p>\n                \n                <p>Te hacemos entrega del archivo adjunto necesario para la <span class=\"highlight\">creaci&oacute;n de las sucursales</span>. Te agradecemos procesar esta informaci&oacute;n para poner al d&iacute;a los registros que tenemos pendientes.</p>\n                \n                <p>Cualquier duda adicional que surja durante el proceso, quedamos atentos para apoyarte de inmediato.</p>\n            </div>\n\n            <div class=\"signature-section\">\n                <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #718096;\">Cordialmente,</p>\n                <p class=\"sig-name\">Jorge Pati&ntilde;o</p>\n                <p class=\"sig-info\">Cel: 3203453744</p>\n                <p class=\"sig-role\">Director de Operaciones</p>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3392,
+        944
+      ],
+      "id": "6adb637a-00cd-4d15-b804-dd611cb52e63",
+      "name": "Send a message1",
+      "webhookId": "91b3ada4-1783-4c3f-9618-919eab1458f2",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E6A3o0KS4UfkMlS3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Esto vuelve a traer al flujo todos los datos de la consulta original\nreturn $('Get row(s) in sheet1').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        944
+      ],
+      "id": "d418c568-2b6f-4246-a44d-85aab1bdfef7",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4",
+          "mode": "list",
+          "cachedResultName": "AKIENVIO S.A.S SUCURSALES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 139350032,
+          "mode": "list",
+          "cachedResultName": "Copia de  GEC-COR-R-07",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rSVz_HWHIWiEeqMqLV4Wm61lvqjC2ujeqD63AFOFWf4/edit#gid=139350032"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "¿ENVIADO POR CORREO?": "SI"
+          },
+          "matchingColumns": [
+            "row_number"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3776,
+        944
+      ],
+      "id": "1cea7ee0-4efc-4fe2-8852-4dbc0661cf90",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        1136
+      ],
+      "id": "d4165172-290a-4f3c-83a1-cea334891efa",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "content": "## Activación del Flujo y Filtrado\n**Ejecución Programada:** El flujo se activa automáticamente a las 17:00 hrs. En esta etapa, el sistema consulta la base de datos y filtra los nuevos registros correspondientes a las sucursales que se encuentran pendientes de inscripción.",
+        "height": 240,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1008,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "f061a8eb-bdef-47a3-8051-697e71f58532",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Generación de Documento\nEl sistema clona el archivo maestro `plantillaSucursales` y lo renombra dinámicamente utilizando la fecha de ejecución. A continuación, consolida e inserta de forma automática la información detallada de todas las sucursales pendientes dentro de esta nueva hoja de cálculo.",
+        "height": 240,
+        "width": 736,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1696,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "e034a51f-6394-4ca9-873b-5754a01137d2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Envio de informacion por Email\n",
+        "height": 480,
+        "width": 2976,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        864
+      ],
+      "id": "348d29e5-10ae-498c-89bd-ca54cbcfa130",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Correos de destino \njorgeptn@gmail.com;Ejecutivodepuntos.bogota@interrapidisimo.com;supervisor.clientescorporativos@interrapidisimo.com;auxiliar.canales2@interrapidisimo.com;coordinador.ventascorporativas1@interrapidisimo.com;subgerente.cuentasclave@interrapidisimo.com;supervisor.clientescorporativos1@interrapidisimo.com;supervisor.puntosmoviles3@interrapidisimo.com",
+        "height": 96,
+        "width": 1504,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2464,
+        736
+      ],
+      "typeVersion": 1,
+      "id": "b865ac89-9077-4d8a-8319-7f961a1acd53",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Aprobación y Distribución\nSe envía un correo de validación con el archivo Excel adjunto, el cual incluye botones de acción interactivos para \"Aprobar\" o \"Rechazar\" el proceso. Una vez aprobado, el sistema despacha un correo corporativo al equipo de Inter Rapidísimo (con copias internas) para hacer la entrega oficial del documento autorizado.\n\nPara finalizar, el flujo itera sobre el identificador `row_number` de cada registro en el archivo maestro original, actualizando el estado de la columna `¿ENVIADO POR CORREO?` a \"SI\" y cerrando así el ciclo operativo.",
+        "height": 128,
+        "width": 1504,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2464,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "114abc03-545e-4cfa-8cd1-7e5d2d70e27a",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-03T02:24:23.259Z",
+      "createdAt": "2026-03-03T02:24:23.259Z",
+      "role": "workflow:owner",
+      "workflowId": "ZfNMbedDU6HxUWsS",
+      "projectId": "E56trdgxInvxGA6Y",
+      "project": {
+        "updatedAt": "2026-01-12T22:50:30.978Z",
+        "createdAt": "2026-01-12T21:05:23.614Z",
+        "id": "E56trdgxInvxGA6Y",
+        "name": "jorge Patino <jorgeptn@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-12T21:05:23.619Z",
+            "createdAt": "2026-01-12T21:05:23.619Z",
+            "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+            "projectId": "E56trdgxInvxGA6Y",
+            "user": {
+              "updatedAt": "2026-03-03T05:00:02.000Z",
+              "createdAt": "2026-01-12T21:05:23.596Z",
+              "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+              "email": "jorgeptn@gmail.com",
+              "firstName": "jorge",
+              "lastName": "Patino",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2026-01-12T22:51:32.120Z",
+                "personalization_survey_n8n_version": "2.2.5",
+                "companyIndustryExtended": [
+                  "physical-retail-or-services"
+                ],
+                "companySize": "<20",
+                "companyType": "other",
+                "role": "customer-support",
+                "reportedSource": "google"
+              },
+              "settings": {
+                "firstSuccessfulWorkflowId": "zQ-8lqPtwSRNSIrY09cbr",
+                "userActivated": true,
+                "userActivatedAt": 1768360374572,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1772502543338
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-03-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger1": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-03T02:41:36.600Z",
+  "versionCounter": 10,
+  "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617"
+}
