@@ -1,7 +1,7 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-03-03T04:57:56.000Z",
+    "updatedAt": "2026-03-03T06:10:54.000Z",
     "createdAt": "2026-03-03T04:57:55.078Z",
     "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
     "workflowId": "AlXoZ5kEzwbNZQ2Z",
@@ -287,6 +287,22 @@
         "workflowId": "AlXoZ5kEzwbNZQ2Z",
         "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
         "event": "activated",
+        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
+      },
+      {
+        "createdAt": "2026-03-03T06:10:54.017Z",
+        "id": 49,
+        "workflowId": "AlXoZ5kEzwbNZQ2Z",
+        "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
+        "event": "activated",
+        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
+      },
+      {
+        "createdAt": "2026-03-03T06:10:42.981Z",
+        "id": 48,
+        "workflowId": "AlXoZ5kEzwbNZQ2Z",
+        "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
+        "event": "deactivated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
@@ -641,6 +657,6 @@
   "tags": [],
   "triggerCount": 0,
   "updatedAt": "2026-03-03T04:57:55.076Z",
-  "versionCounter": 8,
+  "versionCounter": 11,
   "versionId": "85541b22-74d4-42cc-8a86-828abb845d91"
 }
