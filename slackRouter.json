@@ -487,68 +487,6 @@
           }
         ]
       ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Get row(s) in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get row(s) in sheet": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript1": {
-      "main": [
-        [
-          {
-            "node": "Append row in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript2": {
-      "main": [
-        [
-          {
-            "node": "Append row in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "createdAt": "2026-03-03T01:53:45.914Z",
@@ -704,187 +642,6 @@
       "id": "1d5e913c-4a04-4310-a20e-5f2c9bb47023",
       "name": " a Inscripcion Sucursales",
       "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  // 1. Buscar el texto dinámicamente dependiendo del tipo de evento de Slack\n  let texto = \"\";\n  if (item.json.text) {\n    texto = item.json.text; // Ruta normal (mensaje nuevo)\n  } else if (item.json.previous_message && item.json.previous_message.text) {\n    texto = item.json.previous_message.text; // Ruta cuando el mensaje es borrado/editado\n  } else if (item.json.message && item.json.message.text) {\n    texto = item.json.message.text; // Otra variante de edición en Slack\n  }\n\n  // Si definitivamente no hay texto en ninguna ruta, saltamos este item\n  if (!texto) continue;\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  \n  // Extraemos todo el bloque de la novedad hasta donde dice *--DESTINO--*\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      resultados.push({\n        json: {\n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    }\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        624,
-        -160
-      ],
-      "id": "51dae4b6-495f-4cc3-a98c-848808396369",
-      "name": "Code in JavaScript",
-      "retryOnFail": false,
-      "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
-          "mode": "list",
-          "cachedResultName": "Oficinas",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "oficinaList",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit#gid=0"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "Municipio",
-              "lookupValue": "={{ $json.CIUDAD }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        848,
-        -160
-      ],
-      "id": "06f86b83-16e0-48ff-83c7-4b26b75a87b7",
-      "name": "Get row(s) in sheet",
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "pE73l5Kd3TQ63AuS",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "5baa25d0-09cc-45c3-b7be-a9f5871addfa",
-              "leftValue": "={{ $json.row_number }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "exists",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        1024,
-        -160
-      ],
-      "id": "6468346a-7f86-4d6a-979d-6a3abe547d6f",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // 1. Tomamos los datos que SÍ llegaron a este nodo (los de la sucursal)\n  const ciudad = item.json[\"CIUDAD\"] || item.json[\"Municipio\"]; \n  const oficina = item.json[\"Oficina\"];\n  \n  // 2. \"Rescatamos\" los datos perdidos llamando directamente al nodo que los extrajo.\n  // IMPORTANTE: Asegúrate de que 'Code in JavaScript' sea exactamente el nombre de ese nodo.\n  const guia = $('Code in JavaScript').first().json[\"Numero de guia\"];\n  let telefono = $('Code in JavaScript').first().json[\"TELÉFONO\"];\n\n  // 3. Procesar el teléfono (validando que exista y limpiándolo)\n  if (telefono) {\n    telefono = telefono.toString().replace(/\\D/g, ''); // Limpiar caracteres no numéricos\n    \n    if (telefono.length === 10) {\n      telefono = '57' + telefono; // Indicativo Colombia\n    }\n  }\n\n  // 4. Crear el mensaje con formato de WhatsApp (Sin emojis)\n const mensaje = `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${guia}* ya se encuentra en *${ciudad}* y está listo para ser reclamado.\\n\\n*Dirección de la oficina:* ${oficina}\\n\\nTe invitamos a recogerlo lo más pronto posible para evitar que sea devuelto.\\n\\nSi deseas consultar la ubicación exacta en el mapa, puedes ingresar a este enlace:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nPara más información sobre tu entrega, puedes contactar directamente a Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo!`;\n\n  // 5. Codificar el texto para que los espacios funcionen en la URL\n  const mensajeCodificado = encodeURIComponent(mensaje);\n\n  // 6. Armar el enlace final de WhatsApp\n  const enlaceWhatsApp = `https://wa.me/${telefono}?text=${mensajeCodificado}`;\n\n  // 7. Guardamos el enlace y el mensaje en el JSON de salida\n  item.json[\"Mensaje a Enviar\"] = mensaje;\n  item.json[\"Enlace WhatsApp\"] = enlaceWhatsApp;\n}\n\nreturn items;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1232,
-        -304
-      ],
-      "id": "957372db-aa79-4fa0-9b77-b0fff7b02bcc",
-      "name": "Code in JavaScript1"
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // 1. Tomamos los datos que SÍ llegaron a este nodo (los de la sucursal)\n  \n  // 2. \"Rescatamos\" los datos perdidos llamando directamente al nodo que los extrajo.\n  // IMPORTANTE: Asegúrate de que 'Code in JavaScript' sea exactamente el nombre de ese nodo.\n  const guia = $('Code in JavaScript').first().json[\"Numero de guia\"];\n  let telefono = $('Code in JavaScript').first().json[\"TELÉFONO\"];\n  let ciudad =  $('Code in JavaScript').first().json[\"CIUDAD\"];\n  \n  // 3. Procesar el teléfono (validando que exista y limpiándolo)\n  if (telefono) {\n    telefono = telefono.toString().replace(/\\D/g, ''); // Limpiar caracteres no numéricos\n    \n    if (telefono.length === 10) {\n      telefono = '57' + telefono; // Indicativo Colombia\n    }\n  }\n\n  // 4. Crear el mensaje con formato de WhatsApp (Sin emojis)\n const mensaje = `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${guia}* ya se encuentra en *${ciudad}* y está listo para ser reclamado.\\n\\nTe invitamos a recogerlo lo más pronto posible para evitar que sea devuelto.\\n\\nPuedes consultar la dirección exacta de la oficina ingresando a este enlace:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nSi necesitas más información sobre la entrega, puedes comunicarte directamente con la línea de atención de Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo y que lo disfrutes!`;\n\n  // 5. Codificar el texto para que los espacios funcionen en la URL\n  const mensajeCodificado = encodeURIComponent(mensaje);\n\n  // 6. Armar el enlace final de WhatsApp\n  const enlaceWhatsApp = `https://wa.me/${telefono}?text=${mensajeCodificado}`;\n\n  // 7. Guardamos el enlace y el mensaje en el JSON de salida\n  item.json[\"Mensaje a Enviar\"] = mensaje;\n  item.json[\"Enlace WhatsApp\"] = enlaceWhatsApp;\n}\n\nreturn items;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1232,
-        -64
-      ],
-      "id": "4616f0b6-de93-4650-b97d-5455b64a276b",
-      "name": "Code in JavaScript2"
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
-          "mode": "list",
-          "cachedResultName": "Oficinas",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": 2104441529,
-          "mode": "list",
-          "cachedResultName": "Hoja 2",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit#gid=2104441529"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Mensaje": "={{ $json[\"Enlace WhatsApp\"] }}",
-            "Guia": "={{ $('Code in JavaScript').item.json['Numero de guia'] }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "Guia",
-              "displayName": "Guia",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Mensaje",
-              "displayName": "Mensaje",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        1584,
-        -240
-      ],
-      "id": "b7e8ea65-55c7-4417-8957-3767bbcd9903",
-      "name": "Append row in sheet",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "pE73l5Kd3TQ63AuS",
-          "name": "Google Sheets account"
-        }
-      }
     }
   ],
   "pinData": {},
@@ -915,7 +672,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-03-03T05:00:02.000Z",
+              "updatedAt": "2026-03-05T00:35:51.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -945,7 +702,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-03-03",
+              "lastActiveAt": "2026-03-04",
               "isPending": false
             }
           }
@@ -956,7 +713,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-03-03T04:57:38.698Z",
-  "versionCounter": 16,
-  "versionId": "766bd262-23ce-481c-a5d0-f5e790e63cde"
+  "updatedAt": "2026-03-05T01:11:23.788Z",
+  "versionCounter": 17,
+  "versionId": "38905305-99e8-430e-ae72-4c0fb9306afb"
 }
