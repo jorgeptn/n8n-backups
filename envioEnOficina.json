@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-03-03T06:10:54.000Z",
-    "createdAt": "2026-03-03T04:57:55.078Z",
-    "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
+    "updatedAt": "2026-03-05T00:56:33.000Z",
+    "createdAt": "2026-03-05T00:56:30.561Z",
+    "versionId": "024e3baa-bfe3-41a6-9f92-a0f311e68bbb",
     "workflowId": "AlXoZ5kEzwbNZQ2Z",
     "nodes": [
       {
@@ -15,19 +15,19 @@
         "name": "When Executed by Another Workflow",
         "type": "n8n-nodes-base.executeWorkflowTrigger",
         "position": [
-          -304,
-          384
+          -544,
+          752
         ]
       },
       {
         "parameters": {
-          "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  // 1. Buscar el texto dinámicamente dependiendo del tipo de evento de Slack\n  let texto = \"\";\n  if (item.json.text) {\n    texto = item.json.text; // Ruta normal (mensaje nuevo)\n  } else if (item.json.previous_message && item.json.previous_message.text) {\n    texto = item.json.previous_message.text; // Ruta cuando el mensaje es borrado/editado\n  } else if (item.json.message && item.json.message.text) {\n    texto = item.json.message.text; // Otra variante de edición en Slack\n  }\n\n  // Si definitivamente no hay texto en ninguna ruta, saltamos este item\n  if (!texto) continue;\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  \n  // Extraemos todo el bloque de la novedad hasta donde dice *--DESTINO--*\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      resultados.push({\n        json: {\n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    }\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
+          "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  const msg = item.json;\n  let texto = \"\";\n\n  // 1. Buscar el texto dinámicamente incluyendo los \"attachments\" de Slack\n  \n  // Ruta normal (mensaje nuevo)\n  if (msg.text) {\n    texto = msg.text;\n  } else if (msg.attachments?.[0]?.text) {\n    texto = msg.attachments[0].text;\n  } \n  // Ruta cuando el mensaje es borrado/editado\n  else if (msg.previous_message?.text) {\n    texto = msg.previous_message.text;\n  } else if (msg.previous_message?.attachments?.[0]?.text) {\n    texto = msg.previous_message.attachments[0].text;\n  } \n  // Otra variante de edición en Slack\n  else if (msg.message?.text) {\n    texto = msg.message.text;\n  } else if (msg.message?.attachments?.[0]?.text) {\n    texto = msg.message.attachments[0].text;\n  }\n\n  // Si definitivamente no hay texto en ninguna ruta, saltamos este item\n  if (!texto) continue;\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  \n  // Extraemos todo el bloque de la novedad hasta donde dice *--DESTINO--*\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      resultados.push({\n        json: {\n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    }\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          -80,
-          384
+          -160,
+          1008
         ],
         "id": "22761fa8-57df-4507-8ee7-022a3e5629b8",
         "name": "Code in JavaScript",
@@ -63,8 +63,8 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          144,
-          384
+          64,
+          1008
         ],
         "id": "5a923241-53a0-4d53-a885-35a6ac886b42",
         "name": "Get row(s) in sheet",
@@ -104,8 +104,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          368,
-          384
+          288,
+          1008
         ],
         "id": "f7a841be-3d12-4fc4-84cd-8ebe4ad0a762",
         "name": "If"
@@ -117,8 +117,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          592,
-          288
+          512,
+          912
         ],
         "id": "3071a8aa-f8ae-46e2-83d8-f2e4329d79ef",
         "name": "Code in JavaScript1"
@@ -130,8 +130,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          592,
-          480
+          512,
+          1104
         ],
         "id": "cfd7fd61-4ec2-49f8-a3cf-5151fb787629",
         "name": "Code in JavaScript2"
@@ -188,8 +188,8 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          816,
-          384
+          736,
+          1008
         ],
         "id": "d3154078-dc2f-4195-a9e1-2207f95de793",
         "name": "Append row in sheet",
@@ -199,12 +199,299 @@
             "name": "Google Sheets account"
           }
         }
+      },
+      {
+        "parameters": {
+          "content": "## 1) Entrada y validación\nEste subflujo recibe datos desde otro workflow, extrae guía/ciudad/teléfono y valida formato mínimo.\nSi falta información, enruta a control de errores.",
+          "height": 220,
+          "width": 420,
+          "color": 7
+        },
+        "id": "51aa607a-0db6-4f38-a1ca-548f5678471f",
+        "name": "Sticky Note - Entrada",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -592,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## 2) Enriquecimiento (2 rutas)\nConsulta Google Sheets para buscar oficina por ciudad.\n- Si encuentra oficina: mensaje con dirección.\n- Si no encuentra oficina: mensaje alterno (igual se envía).",
+          "height": 220,
+          "width": 430,
+          "color": 4
+        },
+        "id": "f3d3ba81-3936-4cb9-a197-fa89831b06e9",
+        "name": "Sticky Note - Enriquecimiento",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          80,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## 3) Salida y control de errores\nConstruye mensaje WhatsApp, valida errores finales y escribe en hoja destino solo cuando esté OK.\nErrores quedan estructurados para monitoreo aguas arriba.",
+          "height": 220,
+          "width": 470,
+          "color": 6
+        },
+        "id": "47909c9d-69d8-4502-8aad-9f71a1bb0f63",
+        "name": "Sticky Note - Salida",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          720,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  const msg = item.json;\n  let texto = \"\";\n\n  // 1. Buscar el texto dinámicamente y dejar un registro de dónde se encontró\n  if (msg.text) {\n    texto = msg.text;\n    console.log(\"✅ Texto encontrado en: msg.text\");\n  } else if (msg.attachments?.[0]?.text) {\n    texto = msg.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.attachments[0].text\");\n  } \n  else if (msg.previous_message?.text) {\n    texto = msg.previous_message.text;\n    console.log(\"✅ Texto encontrado en: msg.previous_message.text\");\n  } else if (msg.previous_message?.attachments?.[0]?.text) {\n    texto = msg.previous_message.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.previous_message.attachments[0].text\");\n  } \n  else if (msg.message?.text) {\n    texto = msg.message.text;\n    console.log(\"✅ Texto encontrado en: msg.message.text\");\n  } else if (msg.message?.attachments?.[0]?.text) {\n    texto = msg.message.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.message.attachments[0].text\");\n  }\n\n  // Si definitivamente no hay texto, lo reportamos y saltamos\n  if (!texto) {\n    console.log(\"⚠️ No se encontró texto en este item. Revisa el JSON de entrada.\");\n    continue;\n  }\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      console.log(`📦 Guía ${guia} procesada con éxito. Cumple las condiciones.`);\n      resultados.push({\n        json: {\n          \"ok\": true, \n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    } else {\n      console.log(`ℹ️ Guía ${guia} ignorada. La novedad no corresponde a oficina.`);\n    }\n  } else {\n    console.log(\"❌ Faltan datos en el Regex. Revisa si el formato del texto cambió.\");\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
+        },
+        "id": "6296f11b-e7fa-4290-bf6a-5340ba87c439",
+        "name": "Validar y extraer datos",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -336,
+          480
+        ],
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "cond-ok1",
+                "leftValue": "={{ $json.ok }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "ccaadf72-e146-4a1f-aa2e-a35a39144932",
+        "name": "Datos válidos?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -112,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
+            "mode": "list",
+            "cachedResultName": "Oficinas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "oficinaList",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Municipio",
+                "lookupValue": "={{ $json.CIUDAD }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "9e9075e0-0421-41b4-8889-59eaa2c37726",
+        "name": "Buscar oficina por ciudad",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          128,
+          480
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\n// 1. Protegemos la llamada al nodo anterior para evitar que el código colapse\nlet fallback = {};\ntry {\n  fallback = $('Validar y extraer datos').first()?.json || {};\n} catch (e) {\n  console.log(\"⚠️ No se pudo acceder al nodo 'Validar y extraer datos' (puede que no exista en esta ruta).\");\n}\n\nfor (const item of items) {\n  const j = item.json || {};\n\n  // 2. CORRECCIÓN: Buscamos las llaves exactas que generó el Nodo 1\n  if (!j.telefono) j.telefono = j['TELÉFONO'] || fallback['TELÉFONO'];\n  if (!j.guia) j.guia = j['Numero de guia'] || fallback['Numero de guia'];\n  if (!j.ciudad) j.ciudad = j['CIUDAD'] || fallback['CIUDAD'];\n\n  // 3. Validación de datos críticos\n  if (!j.telefono || !j.guia || !j.ciudad) {\n    j.ok = false; \n    j.stage = 'compose'; \n    j.error = 'Faltan datos críticos (guía/ciudad/teléfono)';\n    console.log(\"❌ Faltan datos para la guía:\", j.guia || \"Desconocida\");\n    continue; // Saltamos a la siguiente guía\n  }\n\n  // 4. Limpieza y normalización del teléfono\n  let telefono = String(j.telefono).replace(/\\D/g, ''); // Quitamos todo lo que no sea número\n  if (telefono.length === 10) telefono = '57' + telefono; // Asumimos Colombia si tiene 10 dígitos\n\n  if (telefono.length < 12) {\n    j.ok = false; \n    j.stage = 'compose'; \n    j.error = 'Teléfono inválido tras normalización';\n    console.log(`❌ Teléfono inválido (${telefono}) para la guía:`, j.guia);\n    continue;\n  }\n\n  // 5. Lógica de la Oficina\n  const oficina = j['Oficina'];\n  const conOficina = Boolean(oficina && String(oficina).trim());\n\n  // 6. Construcción del mensaje dinámico\n  const mensaje = conOficina\n    ? `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${j.guia}* ya se encuentra en *${j.ciudad}* y está listo para ser reclamado.\\n\\n*Dirección de la oficina:* ${oficina}\\n\\nTe invitamos a recogerlo lo más pronto posible para evitar que sea devuelto.\\n\\nSi deseas consultar la ubicación exacta en el mapa, puedes ingresar a este enlace:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nPara más información sobre tu entrega, puedes contactar directamente a Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo!`\n    : `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${j.guia}* ya se encuentra en *${j.ciudad}* y está listo para ser reclamado.\\n\\nPor ahora no tenemos la dirección exacta de la oficina en el sistema, pero puedes consultarla aquí:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nSi necesitas más información sobre la entrega, puedes comunicarte directamente con la línea de atención de Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo y que lo disfrutes!`;\n\n  // 7. Guardamos los resultados en el JSON de salida\n  j.ok = true;\n  j.telefono = telefono;\n  j['Mensaje a Enviar'] = mensaje;\n  j['Enlace WhatsApp'] = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;\n  j['ruta'] = conOficina ? 'con_oficina' : 'sin_oficina';\n}\n\nreturn items;"
+        },
+        "id": "d1b403f5-d59b-4e0e-b44c-3bc0fb9b9702",
+        "name": "Construir mensaje y enlace",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          352,
+          480
+        ],
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "cond-ok2",
+                "leftValue": "={{ $json.ok }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "3d2a5cf0-1e84-4a3b-b436-058d0fe02cb5",
+        "name": "Sin errores?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          576,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
+            "mode": "list"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2104441529,
+            "mode": "list"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Mensaje": "={{ $json[\"Enlace WhatsApp\"] }}",
+              "Guia": "={{ $json.guia }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Guia",
+                "displayName": "Guia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Mensaje",
+                "displayName": "Mensaje",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "f53fb3ec-2451-455c-a762-45e28057d42f",
+        "name": "Guardar enlace en hoja",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          800,
+          384
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "pE73l5Kd3TQ63AuS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "3a49e9ff-1221-436c-ac76-88d687e6044b",
+        "name": "Fin OK",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1024,
+          384
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const err = $json.error || 'Error no especificado';\nreturn [{ json: { ok:false, workflow:'envioEnOficina_optimizadov2', stage:$json.stage || 'unknown', error:err, guia:$json.guia || null, ciudad:$json.ciudad || null, timestamp:new Date().toISOString() } }];"
+        },
+        "id": "9e771759-b44e-4c08-9c7f-3a7ca21e66b3",
+        "name": "Estandarizar error",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          800,
+          624
+        ],
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {},
+        "id": "ed329c87-3865-4b58-bef0-80ec5da1b2a0",
+        "name": "Fin Error",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1024,
+          592
+        ]
       }
     ],
     "connections": {
       "When Executed by Another Workflow": {
         "main": [
           [
+            {
+              "node": "Validar y extraer datos",
+              "type": "main",
+              "index": 0
+            },
             {
               "node": "Code in JavaScript",
               "type": "main",
@@ -274,44 +561,124 @@
             }
           ]
         ]
+      },
+      "Validar y extraer datos": {
+        "main": [
+          [
+            {
+              "node": "Datos válidos?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Datos válidos?": {
+        "main": [
+          [
+            {
+              "node": "Buscar oficina por ciudad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Estandarizar error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar oficina por ciudad": {
+        "main": [
+          [
+            {
+              "node": "Construir mensaje y enlace",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Construir mensaje y enlace": {
+        "main": [
+          [
+            {
+              "node": "Sin errores?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sin errores?": {
+        "main": [
+          [
+            {
+              "node": "Guardar enlace en hoja",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Estandarizar error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar enlace en hoja": {
+        "main": [
+          [
+            {
+              "node": "Fin OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Estandarizar error": {
+        "main": [
+          [
+            {
+              "node": "Fin Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "jorge Patino",
-    "name": "Version 85541b22",
+    "name": "Version 024e3baa",
     "description": "",
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-03T04:57:56.532Z",
-        "id": 43,
+        "createdAt": "2026-03-05T00:56:33.095Z",
+        "id": 52,
         "workflowId": "AlXoZ5kEzwbNZQ2Z",
-        "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
+        "versionId": "024e3baa-bfe3-41a6-9f92-a0f311e68bbb",
         "event": "activated",
-        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
-      },
-      {
-        "createdAt": "2026-03-03T06:10:54.017Z",
-        "id": 49,
-        "workflowId": "AlXoZ5kEzwbNZQ2Z",
-        "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
-        "event": "activated",
-        "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
-      },
-      {
-        "createdAt": "2026-03-03T06:10:42.981Z",
-        "id": 48,
-        "workflowId": "AlXoZ5kEzwbNZQ2Z",
-        "versionId": "85541b22-74d4-42cc-8a86-828abb845d91",
-        "event": "deactivated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
-  "activeVersionId": "85541b22-74d4-42cc-8a86-828abb845d91",
+  "activeVersionId": "024e3baa-bfe3-41a6-9f92-a0f311e68bbb",
   "connections": {
     "When Executed by Another Workflow": {
       "main": [
         [
+          {
+            "node": "Validar y extraer datos",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Code in JavaScript",
             "type": "main",
@@ -381,6 +748,97 @@
           }
         ]
       ]
+    },
+    "Validar y extraer datos": {
+      "main": [
+        [
+          {
+            "node": "Datos válidos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos válidos?": {
+      "main": [
+        [
+          {
+            "node": "Buscar oficina por ciudad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Estandarizar error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar oficina por ciudad": {
+      "main": [
+        [
+          {
+            "node": "Construir mensaje y enlace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir mensaje y enlace": {
+      "main": [
+        [
+          {
+            "node": "Sin errores?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sin errores?": {
+      "main": [
+        [
+          {
+            "node": "Guardar enlace en hoja",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Estandarizar error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar enlace en hoja": {
+      "main": [
+        [
+          {
+            "node": "Fin OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estandarizar error": {
+      "main": [
+        [
+          {
+            "node": "Fin Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2026-03-03T02:48:19.580Z",
@@ -401,19 +859,19 @@
       "name": "When Executed by Another Workflow",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        -304,
-        384
+        -544,
+        752
       ]
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  // 1. Buscar el texto dinámicamente dependiendo del tipo de evento de Slack\n  let texto = \"\";\n  if (item.json.text) {\n    texto = item.json.text; // Ruta normal (mensaje nuevo)\n  } else if (item.json.previous_message && item.json.previous_message.text) {\n    texto = item.json.previous_message.text; // Ruta cuando el mensaje es borrado/editado\n  } else if (item.json.message && item.json.message.text) {\n    texto = item.json.message.text; // Otra variante de edición en Slack\n  }\n\n  // Si definitivamente no hay texto en ninguna ruta, saltamos este item\n  if (!texto) continue;\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  \n  // Extraemos todo el bloque de la novedad hasta donde dice *--DESTINO--*\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      resultados.push({\n        json: {\n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    }\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
+        "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  const msg = item.json;\n  let texto = \"\";\n\n  // 1. Buscar el texto dinámicamente incluyendo los \"attachments\" de Slack\n  \n  // Ruta normal (mensaje nuevo)\n  if (msg.text) {\n    texto = msg.text;\n  } else if (msg.attachments?.[0]?.text) {\n    texto = msg.attachments[0].text;\n  } \n  // Ruta cuando el mensaje es borrado/editado\n  else if (msg.previous_message?.text) {\n    texto = msg.previous_message.text;\n  } else if (msg.previous_message?.attachments?.[0]?.text) {\n    texto = msg.previous_message.attachments[0].text;\n  } \n  // Otra variante de edición en Slack\n  else if (msg.message?.text) {\n    texto = msg.message.text;\n  } else if (msg.message?.attachments?.[0]?.text) {\n    texto = msg.message.attachments[0].text;\n  }\n\n  // Si definitivamente no hay texto en ninguna ruta, saltamos este item\n  if (!texto) continue;\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  \n  // Extraemos todo el bloque de la novedad hasta donde dice *--DESTINO--*\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      resultados.push({\n        json: {\n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    }\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -80,
-        384
+        -160,
+        1008
       ],
       "id": "22761fa8-57df-4507-8ee7-022a3e5629b8",
       "name": "Code in JavaScript",
@@ -449,8 +907,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        144,
-        384
+        64,
+        1008
       ],
       "id": "5a923241-53a0-4d53-a885-35a6ac886b42",
       "name": "Get row(s) in sheet",
@@ -490,8 +948,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        368,
-        384
+        288,
+        1008
       ],
       "id": "f7a841be-3d12-4fc4-84cd-8ebe4ad0a762",
       "name": "If"
@@ -503,8 +961,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        592,
-        288
+        512,
+        912
       ],
       "id": "3071a8aa-f8ae-46e2-83d8-f2e4329d79ef",
       "name": "Code in JavaScript1"
@@ -516,8 +974,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        592,
-        480
+        512,
+        1104
       ],
       "id": "cfd7fd61-4ec2-49f8-a3cf-5151fb787629",
       "name": "Code in JavaScript2"
@@ -574,8 +1032,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        816,
-        384
+        736,
+        1008
       ],
       "id": "d3154078-dc2f-4195-a9e1-2207f95de793",
       "name": "Append row in sheet",
@@ -585,9 +1043,338 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "## 1) Entrada y validación\nEste subflujo recibe datos desde otro workflow, extrae guía/ciudad/teléfono y valida formato mínimo.\nSi falta información, enruta a control de errores.",
+        "height": 220,
+        "width": 436,
+        "color": 7
+      },
+      "id": "51aa607a-0db6-4f38-a1ca-548f5678471f",
+      "name": "Sticky Note - Entrada",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2) Enriquecimiento (2 rutas)\nConsulta Google Sheets para buscar oficina por ciudad.\n- Si encuentra oficina: mensaje con dirección.\n- Si no encuentra oficina: mensaje alterno (igual se envía).",
+        "height": 220,
+        "width": 574,
+        "color": 4
+      },
+      "id": "f3d3ba81-3936-4cb9-a197-fa89831b06e9",
+      "name": "Sticky Note - Enriquecimiento",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3) Salida y control de errores\nConstruye mensaje WhatsApp, valida errores finales y escribe en hoja destino solo cuando esté OK.\nErrores quedan estructurados para monitoreo aguas arriba.",
+        "height": 220,
+        "width": 470,
+        "color": 6
+      },
+      "id": "47909c9d-69d8-4502-8aad-9f71a1bb0f63",
+      "name": "Sticky Note - Salida",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        768,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst resultados = [];\n\nfor (const item of items) {\n  const msg = item.json;\n  let texto = \"\";\n\n  // 1. Buscar el texto dinámicamente y dejar un registro de dónde se encontró\n  if (msg.text) {\n    texto = msg.text;\n    console.log(\"✅ Texto encontrado en: msg.text\");\n  } else if (msg.attachments?.[0]?.text) {\n    texto = msg.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.attachments[0].text\");\n  } \n  else if (msg.previous_message?.text) {\n    texto = msg.previous_message.text;\n    console.log(\"✅ Texto encontrado en: msg.previous_message.text\");\n  } else if (msg.previous_message?.attachments?.[0]?.text) {\n    texto = msg.previous_message.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.previous_message.attachments[0].text\");\n  } \n  else if (msg.message?.text) {\n    texto = msg.message.text;\n    console.log(\"✅ Texto encontrado en: msg.message.text\");\n  } else if (msg.message?.attachments?.[0]?.text) {\n    texto = msg.message.attachments[0].text;\n    console.log(\"✅ Texto encontrado en: msg.message.attachments[0].text\");\n  }\n\n  // Si definitivamente no hay texto, lo reportamos y saltamos\n  if (!texto) {\n    console.log(\"⚠️ No se encontró texto en este item. Revisa el JSON de entrada.\");\n    continue;\n  }\n\n  // 2. Extraer los datos usando Expresiones Regulares (Regex)\n  const matchGuia = texto.match(/guía\\s(\\d+)/);\n  const matchTelefono = texto.match(/TELÉFONO:\\s*(\\d+)/);\n  const matchCiudad = texto.match(/CIUDAD:\\s*(.+)/);\n  const matchNovedad = texto.match(/NOVEDAD:\\s*([\\s\\S]*?)(?=\\n\\*--DESTINO--\\*)/);\n\n  // Verificamos que se hayan encontrado todos los campos\n  if (matchGuia && matchTelefono && matchCiudad && matchNovedad) {\n    const guia = matchGuia[1];\n    const telefono = matchTelefono[1];\n    const ciudad = matchCiudad[1].trim();\n    const novedadCompleta = matchNovedad[1];\n\n    // 3. Aplicar la condición\n    const esNovedadOficina = novedadCompleta.includes(\"Tu pedido ha llegado a nuestra oficina\") && \n                             novedadCompleta.includes(\"Está listo para ser reclamado\");\n\n    // Si cumple la condición, armamos el JSON de salida\n    if (esNovedadOficina) {\n      console.log(`📦 Guía ${guia} procesada con éxito. Cumple las condiciones.`);\n      resultados.push({\n        json: {\n          \"ok\": true, \n          \"Numero de guia\": guia,\n          \"CIUDAD\": ciudad,\n          \"TELÉFONO\": telefono\n        }\n      });\n    } else {\n      console.log(`ℹ️ Guía ${guia} ignorada. La novedad no corresponde a oficina.`);\n    }\n  } else {\n    console.log(\"❌ Faltan datos en el Regex. Revisa si el formato del texto cambió.\");\n  }\n}\n\n// Retornamos el array con los resultados.\nreturn resultados;"
+      },
+      "id": "6296f11b-e7fa-4290-bf6a-5340ba87c439",
+      "name": "Validar y extraer datos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        480
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cond-ok1",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ccaadf72-e146-4a1f-aa2e-a35a39144932",
+      "name": "Datos válidos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -112,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
+          "mode": "list",
+          "cachedResultName": "Oficinas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "oficinaList",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Municipio",
+              "lookupValue": "={{ $json.CIUDAD }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9e9075e0-0421-41b4-8889-59eaa2c37726",
+      "name": "Buscar oficina por ciudad",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        128,
+        480
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// 1. Protegemos la llamada al nodo anterior para evitar que el código colapse\nlet fallback = {};\ntry {\n  fallback = $('Validar y extraer datos').first()?.json || {};\n} catch (e) {\n  console.log(\"⚠️ No se pudo acceder al nodo 'Validar y extraer datos' (puede que no exista en esta ruta).\");\n}\n\nfor (const item of items) {\n  const j = item.json || {};\n\n  // 2. CORRECCIÓN: Buscamos las llaves exactas que generó el Nodo 1\n  if (!j.telefono) j.telefono = j['TELÉFONO'] || fallback['TELÉFONO'];\n  if (!j.guia) j.guia = j['Numero de guia'] || fallback['Numero de guia'];\n  if (!j.ciudad) j.ciudad = j['CIUDAD'] || fallback['CIUDAD'];\n\n  // 3. Validación de datos críticos\n  if (!j.telefono || !j.guia || !j.ciudad) {\n    j.ok = false; \n    j.stage = 'compose'; \n    j.error = 'Faltan datos críticos (guía/ciudad/teléfono)';\n    console.log(\"❌ Faltan datos para la guía:\", j.guia || \"Desconocida\");\n    continue; // Saltamos a la siguiente guía\n  }\n\n  // 4. Limpieza y normalización del teléfono\n  let telefono = String(j.telefono).replace(/\\D/g, ''); // Quitamos todo lo que no sea número\n  if (telefono.length === 10) telefono = '57' + telefono; // Asumimos Colombia si tiene 10 dígitos\n\n  if (telefono.length < 12) {\n    j.ok = false; \n    j.stage = 'compose'; \n    j.error = 'Teléfono inválido tras normalización';\n    console.log(`❌ Teléfono inválido (${telefono}) para la guía:`, j.guia);\n    continue;\n  }\n\n  // 5. Lógica de la Oficina\n  const oficina = j['Oficina'];\n  const conOficina = Boolean(oficina && String(oficina).trim());\n\n  // 6. Construcción del mensaje dinámico\n  const mensaje = conOficina\n    ? `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${j.guia}* ya se encuentra en *${j.ciudad}* y está listo para ser reclamado.\\n\\n*Dirección de la oficina:* ${oficina}\\n\\nTe invitamos a recogerlo lo más pronto posible para evitar que sea devuelto.\\n\\nSi deseas consultar la ubicación exacta en el mapa, puedes ingresar a este enlace:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nPara más información sobre tu entrega, puedes contactar directamente a Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo!`\n    : `¡Hola! Te tenemos excelentes noticias.\\n\\nTu paquete con guía *${j.guia}* ya se encuentra en *${j.ciudad}* y está listo para ser reclamado.\\n\\nPor ahora no tenemos la dirección exacta de la oficina en el sistema, pero puedes consultarla aquí:\\nhttps://www3.interrapidisimo.com/SitioOficinaMasCercana/\\n\\nSi necesitas más información sobre la entrega, puedes comunicarte directamente con la línea de atención de Interrapidisimo al *323 255 4455*.\\n\\n¡Gracias por tu tiempo y que lo disfrutes!`;\n\n  // 7. Guardamos los resultados en el JSON de salida\n  j.ok = true;\n  j.telefono = telefono;\n  j['Mensaje a Enviar'] = mensaje;\n  j['Enlace WhatsApp'] = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;\n  j['ruta'] = conOficina ? 'con_oficina' : 'sin_oficina';\n}\n\nreturn items;"
+      },
+      "id": "d1b403f5-d59b-4e0e-b44c-3bc0fb9b9702",
+      "name": "Construir mensaje y enlace",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        480
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cond-ok2",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3d2a5cf0-1e84-4a3b-b436-058d0fe02cb5",
+      "name": "Sin errores?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1abce7Z8eDpqpAdWGkF_3Nwna5WgLdWLGbIis3bjxslQ",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2104441529,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Mensaje": "={{ $json[\"Enlace WhatsApp\"] }}",
+            "Guia": "={{ $json.guia }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Guia",
+              "displayName": "Guia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensaje",
+              "displayName": "Mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f53fb3ec-2451-455c-a762-45e28057d42f",
+      "name": "Guardar enlace en hoja",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pE73l5Kd3TQ63AuS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "3a49e9ff-1221-436c-ac76-88d687e6044b",
+      "name": "Fin OK",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const err = $json.error || 'Error no especificado';\nreturn [{ json: { ok:false, workflow:'envioEnOficina_optimizadov2', stage:$json.stage || 'unknown', error:err, guia:$json.guia || null, ciudad:$json.ciudad || null, timestamp:new Date().toISOString() } }];"
+      },
+      "id": "9e771759-b44e-4c08-9c7f-3a7ca21e66b3",
+      "name": "Estandarizar error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        624
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "id": "ed329c87-3865-4b58-bef0-80ec5da1b2a0",
+      "name": "Fin Error",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        592
+      ]
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "type": "message",
+          "subtype": "message_deleted",
+          "previous_message": {
+            "user": "U071J5H35RS",
+            "type": "message",
+            "ts": "1772670446.623949",
+            "text": "",
+            "team": "T01LC6UNKBL",
+            "attachments": [
+              {
+                "ts": "1772654373.404729",
+                "author_id": "U08QX94HLNT",
+                "channel_id": "C0653G3LD8W",
+                "channel_team": "T01LC6UNKBL",
+                "is_msg_unfurl": true,
+                "color": "D0D0D0",
+                "from_url": "https://akienviosas.slack.com/archives/C0653G3LD8W/p1772654373404729",
+                "is_share": true,
+                "fallback": "[March 4th, 2026 2:59 PM] akinotifier: Ocurrió una novedad en la guía 240047357487 - Usuario: <mailto:capashsas@gmail.com|capashsas@gmail.com>, Paquetería: INTERRAPIDISIMO, Servicio: STANDARD, Novedad: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:.  Está listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: Reclame en oficina",
+                "text": "*:interrapidisimo: Ocurrió una novedad en la guía 240047357487*\nUSUARIO: <mailto:capashsas@gmail.com|capashsas@gmail.com>\nPAQUETERIA: INTERRAPIDISIMO\nSERVICIO: STANDARD\nNOVEDAD: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:. \nEstá listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: Reclame en oficina\n*--DESTINO--*\nCIUDAD: TITIRIBI (ANTIOQUIA)\nDIRECCIÓN: Calle 21 -20-30\nDEP/APTO: OFIC PRINCIPAL INTERRAPIDISIMO \nZIP_CODE: 05809000\nTELÉFONO: 3136008613\n--------------------------------\n\n<https://akienviosas.slack.com/archives/C0653G3LD8W/p1772654373404729|Ver mensaje original>",
+                "author_name": "Notification",
+                "author_link": "https://akienviosas.slack.com/services/B08QX94HL5V",
+                "author_icon": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_48.png",
+                "author_subname": "akinotifier",
+                "mrkdwn_in": [
+                  "text"
+                ],
+                "footer": "Conversación de Slack"
+              }
+            ]
+          },
+          "channel": "C0653G3LD8W",
+          "hidden": true,
+          "deleted_ts": "1772670446.623949",
+          "event_ts": "1772670469.000100",
+          "ts": "1772670469.000100",
+          "channel_type": "group"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
@@ -615,7 +1402,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-03-03T05:00:02.000Z",
+              "updatedAt": "2026-03-05T00:35:51.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -645,7 +1432,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-03-03",
+              "lastActiveAt": "2026-03-04",
               "isPending": false
             }
           }
@@ -656,7 +1443,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-03T04:57:55.076Z",
-  "versionCounter": 11,
-  "versionId": "85541b22-74d4-42cc-8a86-828abb845d91"
+  "updatedAt": "2026-03-05T00:56:53.479Z",
+  "versionCounter": 20,
+  "versionId": "3322c1f3-f05c-41cd-8ebe-e0734e71f1f7"
 }
