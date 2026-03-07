@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-03-03T02:44:00.000Z",
-    "createdAt": "2026-03-03T02:41:16.297Z",
-    "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+    "updatedAt": "2026-03-06T22:58:17.000Z",
+    "createdAt": "2026-03-06T22:58:14.889Z",
+    "versionId": "ffacbc6b-3e8d-4337-8b58-9f98a23d82bc",
     "workflowId": "ZfNMbedDU6HxUWsS",
     "nodes": [
       {
@@ -462,15 +462,15 @@
           "columns": {
             "mappingMode": "defineBelow",
             "value": {
-              "NOMBRE DE LA EMPRESA": "={{ $('Get row(s) in sheet1').item.json['NOMBRE DE LA EMPRESA'] }}",
-              "NIT": "={{ $('Get row(s) in sheet1').item.json.NIT }}",
-              "PERSONA RESPONSABLE DEL PAGO": "={{ $('Get row(s) in sheet1').item.json['PERSONA RESPONSABLE DEL PAGO'] }}",
-              "HORARIO DE RECOGIDA": "={{ $('Get row(s) in sheet1').item.json['HORARIO DE RECOGIDA'] }}",
-              "E-MAIL": "={{ $('Get row(s) in sheet1').item.json['E-MAIL'] }}",
-              "CIUDAD PRESTACIÓN SERVICIO": "={{ $('Get row(s) in sheet1').item.json['CIUDAD PRESTACIÓN SERVICIO'] }}",
-              "DIRECCIÓN": "={{ $('Get row(s) in sheet1').item.json['DIRECCIÓN'] }}",
-              "TELÉFONO": "={{ $('Get row(s) in sheet1').item.json['TELÉFONO'] }}",
-              "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $('Get row(s) in sheet1').item.json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
+              "NOMBRE DE LA EMPRESA": "={{ $json['NOMBRE DE LA EMPRESA'] }}",
+              "NIT": "=901702784",
+              "PERSONA RESPONSABLE DEL PAGO": "={{ $json['PERSONA RESPONSABLE DEL PAGO'] }}",
+              "HORARIO DE RECOGIDA": "={{ $json['HORARIO DE RECOGIDA'] }}",
+              "E-MAIL": "={{ $json['E-MAIL'] }}",
+              "CIUDAD PRESTACIÓN SERVICIO": "={{ $json['CIUDAD PRESTACIÓN SERVICIO'] }}\n",
+              "DIRECCIÓN": "={{ $json['DIRECCIÓN'] }}",
+              "TELÉFONO": "={{ $json['TELÉFONO'] }}",
+              "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
             },
             "matchingColumns": [],
             "schema": [
@@ -978,21 +978,21 @@
       }
     },
     "authors": "jorge Patino",
-    "name": "Version a06f7443",
+    "name": "Version ffacbc6b",
     "description": "",
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-03T02:44:00.436Z",
-        "id": 42,
+        "createdAt": "2026-03-06T22:58:17.040Z",
+        "id": 55,
         "workflowId": "ZfNMbedDU6HxUWsS",
-        "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+        "versionId": "ffacbc6b-3e8d-4337-8b58-9f98a23d82bc",
         "event": "activated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
-  "activeVersionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617",
+  "activeVersionId": "ffacbc6b-3e8d-4337-8b58-9f98a23d82bc",
   "connections": {
     "When Executed by Another Workflow": {
       "main": [
@@ -1630,15 +1630,15 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "NOMBRE DE LA EMPRESA": "={{ $('Get row(s) in sheet1').item.json['NOMBRE DE LA EMPRESA'] }}",
-            "NIT": "={{ $('Get row(s) in sheet1').item.json.NIT }}",
-            "PERSONA RESPONSABLE DEL PAGO": "={{ $('Get row(s) in sheet1').item.json['PERSONA RESPONSABLE DEL PAGO'] }}",
-            "HORARIO DE RECOGIDA": "={{ $('Get row(s) in sheet1').item.json['HORARIO DE RECOGIDA'] }}",
-            "E-MAIL": "={{ $('Get row(s) in sheet1').item.json['E-MAIL'] }}",
-            "CIUDAD PRESTACIÓN SERVICIO": "={{ $('Get row(s) in sheet1').item.json['CIUDAD PRESTACIÓN SERVICIO'] }}",
-            "DIRECCIÓN": "={{ $('Get row(s) in sheet1').item.json['DIRECCIÓN'] }}",
-            "TELÉFONO": "={{ $('Get row(s) in sheet1').item.json['TELÉFONO'] }}",
-            "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $('Get row(s) in sheet1').item.json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
+            "NOMBRE DE LA EMPRESA": "={{ $json['NOMBRE DE LA EMPRESA'] }}",
+            "NIT": "=901702784",
+            "PERSONA RESPONSABLE DEL PAGO": "={{ $json['PERSONA RESPONSABLE DEL PAGO'] }}",
+            "HORARIO DE RECOGIDA": "={{ $json['HORARIO DE RECOGIDA'] }}",
+            "E-MAIL": "={{ $json['E-MAIL'] }}",
+            "CIUDAD PRESTACIÓN SERVICIO": "={{ $json['CIUDAD PRESTACIÓN SERVICIO'] }}\n",
+            "DIRECCIÓN": "={{ $json['DIRECCIÓN'] }}",
+            "TELÉFONO": "={{ $json['TELÉFONO'] }}",
+            "CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO": "={{ $json['CONTACTO Y/0 PERSONA RESPONSABLE DEL ENVÍO'] }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -1999,7 +1999,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-03-05T05:00:01.000Z",
+              "updatedAt": "2026-03-06T21:59:20.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -2029,7 +2029,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-03-05",
+              "lastActiveAt": "2026-03-06",
               "isPending": false
             }
           }
@@ -2044,7 +2044,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-03-03T02:41:36.600Z",
-  "versionCounter": 10,
-  "versionId": "a06f7443-d8e3-462d-9ecf-1dc70ffc1617"
+  "updatedAt": "2026-03-06T22:58:14.884Z",
+  "versionCounter": 13,
+  "versionId": "ffacbc6b-3e8d-4337-8b58-9f98a23d82bc"
 }
