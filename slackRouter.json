@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-03-05T13:58:28.000Z",
-    "createdAt": "2026-03-05T01:11:23.790Z",
-    "versionId": "38905305-99e8-430e-ae72-4c0fb9306afb",
+    "updatedAt": "2026-03-12T04:12:50.036Z",
+    "createdAt": "2026-03-12T04:12:50.036Z",
+    "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
     "workflowId": "T0fy0KupqZ-O-vJwRrvPq",
     "nodes": [
       {
@@ -61,8 +61,8 @@
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.4,
         "position": [
-          -48,
-          -432
+          48,
+          -624
         ],
         "id": "e4e47da8-0df5-4d86-86c7-579bef4c5cfe",
         "name": "Switch"
@@ -79,7 +79,7 @@
         "typeVersion": 1,
         "position": [
           -272,
-          -432
+          -496
         ],
         "id": "e09481de-68bc-46e6-bb80-fa310ee26290",
         "name": "Slack Trigger",
@@ -113,8 +113,8 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.3,
         "position": [
-          192,
-          -416
+          960,
+          -320
         ],
         "id": "74fda897-edf6-4f9f-b5f9-dbc9e9505cd5",
         "name": "a Envio en Oficina",
@@ -127,7 +127,7 @@
             "value": "ZfNMbedDU6HxUWsS",
             "mode": "list",
             "cachedResultUrl": "/workflow/ZfNMbedDU6HxUWsS",
-            "cachedResultName": "My Sub-Workflow 2"
+            "cachedResultName": "flujoCreacionSucursalRouter"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -144,12 +144,145 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.3,
         "position": [
-          192,
-          -608
+          304,
+          -368
         ],
         "id": "1d5e913c-4a04-4310-a20e-5f2c9bb47023",
         "name": " a Inscripcion Sucursales",
         "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "yoxhAe4eAWiZhPd9",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/yoxhAe4eAWiZhPd9",
+            "cachedResultName": "novedadDestinatarioDireccionclawbot"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "mode": "each",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          368,
+          32
+        ],
+        "id": "beb63420-3c04-4a1c-a0ef-624fc9cedfd9",
+        "name": "a Novedad Destinatario Direccion",
+        "alwaysOutputData": true,
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "C06V11085AB",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "C0653G3LD8W",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "253b1a12-c384-40e3-ae4d-06a31a724811"
+                    },
+                    {
+                      "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
+                      "leftValue": "={{ $json.attachments[0].text }}",
+                      "rightValue": "Tu pedido ha llegado a nuestra oficina en del lugar",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "15a24942-d80b-4e4a-988c-838fca0adeb7",
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "C0653G3LD8W",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    },
+                    {
+                      "id": "0f3746c6-18b7-4626-9089-6930a982534f",
+                      "leftValue": "={{ $json.attachments[0].text }}",
+                      "rightValue": "Problema con el destinatario",
+                      "operator": {
+                        "type": "string",
+                        "operation": "contains"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          64,
+          -192
+        ],
+        "id": "ecf243d7-8e11-4607-97b6-d8696e3ea128",
+        "name": "Switch2",
+        "alwaysOutputData": false
       }
     ],
     "connections": {
@@ -160,11 +293,28 @@
               "node": "Switch",
               "type": "main",
               "index": 0
+            },
+            {
+              "node": "Switch2",
+              "type": "main",
+              "index": 0
             }
           ]
         ]
       },
       "Switch": {
+        "main": [
+          [],
+          [
+            {
+              "node": "a Envio en Oficina",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch2": {
         "main": [
           [
             {
@@ -179,26 +329,33 @@
               "type": "main",
               "index": 0
             }
+          ],
+          [
+            {
+              "node": "a Novedad Destinatario Direccion",
+              "type": "main",
+              "index": 0
+            }
           ]
         ]
       }
     },
     "authors": "jorge Patino",
-    "name": "Version 38905305",
-    "description": "",
+    "name": null,
+    "description": null,
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-05T13:58:28.814Z",
-        "id": 54,
+        "createdAt": "2026-03-12T04:12:50.228Z",
+        "id": 70,
         "workflowId": "T0fy0KupqZ-O-vJwRrvPq",
-        "versionId": "38905305-99e8-430e-ae72-4c0fb9306afb",
+        "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
         "event": "activated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
-  "activeVersionId": "38905305-99e8-430e-ae72-4c0fb9306afb",
+  "activeVersionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
   "connections": {
     "Slack Trigger": {
       "main": [
@@ -207,11 +364,28 @@
             "node": "Switch",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
     },
     "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "a Envio en Oficina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
       "main": [
         [
           {
@@ -223,6 +397,13 @@
         [
           {
             "node": "a Envio en Oficina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "a Novedad Destinatario Direccion",
             "type": "main",
             "index": 0
           }
@@ -294,8 +475,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -48,
-        -432
+        48,
+        -624
       ],
       "id": "e4e47da8-0df5-4d86-86c7-579bef4c5cfe",
       "name": "Switch"
@@ -312,7 +493,7 @@
       "typeVersion": 1,
       "position": [
         -272,
-        -432
+        -496
       ],
       "id": "e09481de-68bc-46e6-bb80-fa310ee26290",
       "name": "Slack Trigger",
@@ -346,8 +527,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        192,
-        -416
+        960,
+        -320
       ],
       "id": "74fda897-edf6-4f9f-b5f9-dbc9e9505cd5",
       "name": "a Envio en Oficina",
@@ -360,7 +541,7 @@
           "value": "ZfNMbedDU6HxUWsS",
           "mode": "list",
           "cachedResultUrl": "/workflow/ZfNMbedDU6HxUWsS",
-          "cachedResultName": "My Sub-Workflow 2"
+          "cachedResultName": "flujoCreacionSucursalRouter"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -377,12 +558,145 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        192,
-        -608
+        304,
+        -368
       ],
       "id": "1d5e913c-4a04-4310-a20e-5f2c9bb47023",
       "name": " a Inscripcion Sucursales",
       "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "yoxhAe4eAWiZhPd9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yoxhAe4eAWiZhPd9",
+          "cachedResultName": "novedadDestinatarioDireccionclawbot"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        32
+      ],
+      "id": "beb63420-3c04-4a1c-a0ef-624fc9cedfd9",
+      "name": "a Novedad Destinatario Direccion",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "C06V11085AB",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "C0653G3LD8W",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "253b1a12-c384-40e3-ae4d-06a31a724811"
+                  },
+                  {
+                    "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
+                    "leftValue": "={{ $json.attachments[0].text }}",
+                    "rightValue": "Tu pedido ha llegado a nuestra oficina en del lugar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "15a24942-d80b-4e4a-988c-838fca0adeb7",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "C0653G3LD8W",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "0f3746c6-18b7-4626-9089-6930a982534f",
+                    "leftValue": "={{ $json.attachments[0].text }}",
+                    "rightValue": "Problema con el destinatario",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        -192
+      ],
+      "id": "ecf243d7-8e11-4607-97b6-d8696e3ea128",
+      "name": "Switch2",
+      "alwaysOutputData": false
     }
   ],
   "pinData": {
@@ -390,48 +704,34 @@
       {
         "json": {
           "type": "message",
-          "user": "U08QX94HLNT",
-          "ts": "1772717372.971249",
-          "bot_id": "B08QX94HL5V",
-          "app_id": "A08R4QZ1V62",
-          "text": "Ocurrió una novedad en la guía 240047389670 - Usuario: <mailto:info@elmejorperfume.com|info@elmejorperfume.com>, Paquetería: INTERRAPIDISIMO, Servicio: STANDARD, Novedad: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:.  Está listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: Reclame en oficina",
+          "user": "U071J5H35RS",
+          "ts": "1773281045.236779",
+          "text": "",
           "team": "T01LC6UNKBL",
-          "bot_profile": {
-            "id": "B08QX94HL5V",
-            "deleted": false,
-            "name": "Notification",
-            "updated": 1746643784,
-            "app_id": "A08R4QZ1V62",
-            "user_id": "U08QX94HLNT",
-            "icons": {
-              "image_36": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_36.png",
-              "image_48": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_48.png",
-              "image_72": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_72.png"
-            },
-            "team_id": "T01LC6UNKBL"
-          },
-          "blocks": [
+          "attachments": [
             {
-              "type": "section",
-              "block_id": "2BXoj",
-              "text": {
-                "type": "mrkdwn",
-                "text": "*:interrapidisimo: Ocurrió una novedad en la guía 240047389670*",
-                "verbatim": false
-              }
-            },
-            {
-              "type": "section",
-              "block_id": "SPA5N",
-              "text": {
-                "type": "mrkdwn",
-                "text": "USUARIO: <mailto:info@elmejorperfume.com|info@elmejorperfume.com>\nPAQUETERIA: INTERRAPIDISIMO\nSERVICIO: STANDARD\nNOVEDAD: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:. \nEstá listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: Reclame en oficina\n*--DESTINO--*\nCIUDAD: TARAZA (ANTIOQUIA)\nDIRECCIÓN: Carrera 32 # 35 - 48 casa primer piso cerca al colegio antonio roldan, garzon\nDEP/APTO:  .\nZIP_CODE: 05790000\nTELÉFONO: 3226489231\n--------------------------------",
-                "verbatim": false
-              }
+              "ts": "1773262788.467529",
+              "author_id": "U08QX94HLNT",
+              "channel_id": "C0653G3LD8W",
+              "channel_team": "T01LC6UNKBL",
+              "is_msg_unfurl": true,
+              "color": "D0D0D0",
+              "from_url": "https://akienviosas.slack.com/archives/C0653G3LD8W/p1773262788467529",
+              "is_share": true,
+              "fallback": "[March 11th, 2026 3:59 PM] akinotifier: Ocurrió una novedad en la guía 75352527615 - Usuario: <mailto:noirperfumeria@gmail.com|noirperfumeria@gmail.com>, Paquetería: COORDINADORA, Servicio: STANDARD, Novedad: Problema con el destinatario || Coordinadora no logra encontrar la dirección de entrega :round_pushpin:, nos indica que la direccion esta incompleta. Por favor, confirma la siguiente información: *Dirección:* *Barrio:* *Ciudad/municipio",
+              "text": "*:coordinadora: Ocurrió una novedad en la guía 75352527615*\nUSUARIO: <mailto:noirperfumeria@gmail.com|noirperfumeria@gmail.com>\nPAQUETERIA: COORDINADORA\nSERVICIO: STANDARD\nNOVEDAD: Problema con el destinatario || Coordinadora no logra encontrar la dirección de entrega :round_pushpin:, nos indica que la direccion esta incompleta. Por favor, confirma la siguiente información: *Dirección:* *Barrio:* *Ciudad/municipio\n*--DESTINO--*\nCIUDAD: BOGOTA (CUNDINAMARCA)\nDIRECCIÓN: Calle 24 # 74 A 40 barrio modelia Observación que me llegué después de las 12 del Medio día \nDEP/APTO:  .\nZIP_CODE: 11001000\nTELÉFONO: 3223995528\n--------------------------------\n\n<https://akienviosas.slack.com/archives/C0653G3LD8W/p1773262788467529|Ver mensaje original>",
+              "author_name": "Notification",
+              "author_link": "https://akienviosas.slack.com/services/B08QX94HL5V",
+              "author_icon": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_48.png",
+              "author_subname": "akinotifier",
+              "mrkdwn_in": [
+                "text"
+              ],
+              "footer": "Slack Conversation"
             }
           ],
           "channel": "C0653G3LD8W",
-          "event_ts": "1772717372.971249",
+          "event_ts": "1773281045.236779",
           "channel_type": "group"
         },
         "pairedItem": {
@@ -442,7 +742,8 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "shared": [
     {
@@ -467,7 +768,7 @@
             "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
             "projectId": "E56trdgxInvxGA6Y",
             "user": {
-              "updatedAt": "2026-03-12T00:11:37.000Z",
+              "updatedAt": "2026-03-12T04:10:29.000Z",
               "createdAt": "2026-01-12T21:05:23.596Z",
               "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
               "email": "jorgeptn@gmail.com",
@@ -497,7 +798,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-03-11",
+              "lastActiveAt": "2026-03-12",
               "isPending": false
             }
           }
@@ -508,7 +809,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-03-05T13:58:26.615Z",
-  "versionCounter": 20,
-  "versionId": "38905305-99e8-430e-ae72-4c0fb9306afb"
+  "updatedAt": "2026-03-12T04:12:50.035Z",
+  "versionCounter": 47,
+  "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04"
 }
