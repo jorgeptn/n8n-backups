@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2026-03-12T04:12:50.036Z",
-    "createdAt": "2026-03-12T04:12:50.036Z",
-    "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
+    "updatedAt": "2026-03-12T15:42:00.000Z",
+    "createdAt": "2026-03-12T15:41:58.122Z",
+    "versionId": "e054843d-6ae8-4900-92c0-87ffd0a092d9",
     "workflowId": "T0fy0KupqZ-O-vJwRrvPq",
     "nodes": [
       {
@@ -228,7 +228,7 @@
                     },
                     {
                       "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
-                      "leftValue": "={{ $json.attachments[0].text }}",
+                      "leftValue": "={{ $json.text }}",
                       "rightValue": "Tu pedido ha llegado a nuestra oficina en del lugar",
                       "operator": {
                         "type": "string",
@@ -259,7 +259,7 @@
                     },
                     {
                       "id": "0f3746c6-18b7-4626-9089-6930a982534f",
-                      "leftValue": "={{ $json.attachments[0].text }}",
+                      "leftValue": "={{ $json.text }}",
                       "rightValue": "Problema con el destinatario",
                       "operator": {
                         "type": "string",
@@ -341,21 +341,21 @@
       }
     },
     "authors": "jorge Patino",
-    "name": null,
-    "description": null,
+    "name": "Version e054843d",
+    "description": "",
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-12T04:12:50.228Z",
-        "id": 70,
+        "createdAt": "2026-03-12T15:42:00.636Z",
+        "id": 72,
         "workflowId": "T0fy0KupqZ-O-vJwRrvPq",
-        "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
+        "versionId": "e054843d-6ae8-4900-92c0-87ffd0a092d9",
         "event": "activated",
         "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787"
       }
     ]
   },
-  "activeVersionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04",
+  "activeVersionId": "e054843d-6ae8-4900-92c0-87ffd0a092d9",
   "connections": {
     "Slack Trigger": {
       "main": [
@@ -642,7 +642,7 @@
                   },
                   {
                     "id": "e4bc6432-b02c-4d0e-897c-ce1c4a3e0dfd",
-                    "leftValue": "={{ $json.attachments[0].text }}",
+                    "leftValue": "={{ $json.text }}",
                     "rightValue": "Tu pedido ha llegado a nuestra oficina en del lugar",
                     "operator": {
                       "type": "string",
@@ -673,7 +673,7 @@
                   },
                   {
                     "id": "0f3746c6-18b7-4626-9089-6930a982534f",
-                    "leftValue": "={{ $json.attachments[0].text }}",
+                    "leftValue": "={{ $json.text }}",
                     "rightValue": "Problema con el destinatario",
                     "operator": {
                       "type": "string",
@@ -704,38 +704,49 @@
       {
         "json": {
           "type": "message",
-          "user": "U071J5H35RS",
-          "ts": "1773281045.236779",
-          "text": "",
+          "user": "U08QX94HLNT",
+          "ts": "1773320375.852939",
+          "bot_id": "B08QX94HL5V",
+          "app_id": "A08R4QZ1V62",
+          "text": "Ocurrió una novedad en la guía 240047934513 - Usuario: <mailto:attoperfumes@gmail.com|attoperfumes@gmail.com>, Paquetería: INTERRAPIDISIMO, Servicio: STANDARD, Novedad: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:.  Está listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: PITALITO-HUIL-COL",
           "team": "T01LC6UNKBL",
-          "attachments": [
+          "bot_profile": {
+            "id": "B08QX94HL5V",
+            "deleted": false,
+            "name": "Notification",
+            "updated": 1746643784,
+            "app_id": "A08R4QZ1V62",
+            "user_id": "U08QX94HLNT",
+            "icons": {
+              "image_36": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_36.png",
+              "image_48": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_48.png",
+              "image_72": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_72.png"
+            },
+            "team_id": "T01LC6UNKBL"
+          },
+          "blocks": [
             {
-              "ts": "1773262788.467529",
-              "author_id": "U08QX94HLNT",
-              "channel_id": "C0653G3LD8W",
-              "channel_team": "T01LC6UNKBL",
-              "is_msg_unfurl": true,
-              "color": "D0D0D0",
-              "from_url": "https://akienviosas.slack.com/archives/C0653G3LD8W/p1773262788467529",
-              "is_share": true,
-              "fallback": "[March 11th, 2026 3:59 PM] akinotifier: Ocurrió una novedad en la guía 75352527615 - Usuario: <mailto:noirperfumeria@gmail.com|noirperfumeria@gmail.com>, Paquetería: COORDINADORA, Servicio: STANDARD, Novedad: Problema con el destinatario || Coordinadora no logra encontrar la dirección de entrega :round_pushpin:, nos indica que la direccion esta incompleta. Por favor, confirma la siguiente información: *Dirección:* *Barrio:* *Ciudad/municipio",
-              "text": "*:coordinadora: Ocurrió una novedad en la guía 75352527615*\nUSUARIO: <mailto:noirperfumeria@gmail.com|noirperfumeria@gmail.com>\nPAQUETERIA: COORDINADORA\nSERVICIO: STANDARD\nNOVEDAD: Problema con el destinatario || Coordinadora no logra encontrar la dirección de entrega :round_pushpin:, nos indica que la direccion esta incompleta. Por favor, confirma la siguiente información: *Dirección:* *Barrio:* *Ciudad/municipio\n*--DESTINO--*\nCIUDAD: BOGOTA (CUNDINAMARCA)\nDIRECCIÓN: Calle 24 # 74 A 40 barrio modelia Observación que me llegué después de las 12 del Medio día \nDEP/APTO:  .\nZIP_CODE: 11001000\nTELÉFONO: 3223995528\n--------------------------------\n\n<https://akienviosas.slack.com/archives/C0653G3LD8W/p1773262788467529|Ver mensaje original>",
-              "author_name": "Notification",
-              "author_link": "https://akienviosas.slack.com/services/B08QX94HL5V",
-              "author_icon": "https://avatars.slack-edge.com/2025-05-07/8873947124657_fb9ba060770cc8ee34ea_48.png",
-              "author_subname": "akinotifier",
-              "mrkdwn_in": [
-                "text"
-              ],
-              "footer": "Slack Conversation"
+              "type": "section",
+              "block_id": "bpBiT",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*:interrapidisimo: Ocurrió una novedad en la guía 240047934513*",
+                "verbatim": false
+              }
+            },
+            {
+              "type": "section",
+              "block_id": "1dtP6",
+              "text": {
+                "type": "mrkdwn",
+                "text": "USUARIO: <mailto:attoperfumes@gmail.com|attoperfumes@gmail.com>\nPAQUETERIA: INTERRAPIDISIMO\nSERVICIO: STANDARD\nNOVEDAD: Novedad en el envío || :package: Tu pedido ha llegado a nuestra oficina en del lugar de destino :round_pushpin:. \nEstá listo para ser reclamado. ¿Tienes dudas sobre el proceso de entrega? Estamos aquí para ayudarte :hugging_face: PITALITO-HUIL-COL\n*--DESTINO--*\nCIUDAD: PITALITO (HUILA)\nDIRECCIÓN: Oficina principal Interrapidisimo\nDEP/APTO: Oficina principal Interrapidisimo\nZIP_CODE: 41551000\nTELÉFONO: 3223204672\n--------------------------------",
+                "verbatim": false
+              }
             }
           ],
           "channel": "C0653G3LD8W",
-          "event_ts": "1773281045.236779",
+          "event_ts": "1773320375.852939",
           "channel_type": "group"
-        },
-        "pairedItem": {
-          "item": 0
         }
       }
     ]
@@ -809,7 +820,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-03-12T04:12:50.035Z",
-  "versionCounter": 47,
-  "versionId": "a0e2e702-f320-4909-b0e9-e4b6124e6c04"
+  "updatedAt": "2026-03-12T15:41:58.120Z",
+  "versionCounter": 50,
+  "versionId": "e054843d-6ae8-4900-92c0-87ffd0a092d9"
 }
