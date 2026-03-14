@@ -1,0 +1,333 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Leer correos con adjuntos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer correos con adjuntos": {
+      "main": [
+        [
+          {
+            "node": "Filtrar facturas por body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar facturas por body": {
+      "main": [
+        [
+          {
+            "node": "Es factura?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es factura?": {
+      "main": [
+        [
+          {
+            "node": "Crear carpeta destino",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpeta destino": {
+      "main": [
+        [
+          {
+            "node": "Preparar adjuntos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar adjuntos": {
+      "main": [
+        [
+          {
+            "node": "Subir adjunto a Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir adjunto a Drive": {
+      "main": [
+        [
+          {
+            "node": "Fin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-13T02:36:09.611Z",
+  "description": null,
+  "id": "piBMfhIwLslThHGI",
+  "isArchived": true,
+  "meta": null,
+  "name": "facturasCorreoADrive",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "a541e659-0fa4-4103-98c8-7b725036aa4e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 20,
+        "filters": {
+          "q": "in:inbox has:attachment newer_than:2d"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "id": "ff28fb43-dd23-46dc-a051-1d19abee38fc",
+      "name": "Leer correos con adjuntos",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        260
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E6A3o0KS4UfkMlS3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = ['factura','facturación','cufe','dian','nit'];\n\nfunction norm(s=''){\n  return s.toString().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();\n}\n\nfunction emitter(from=''){\n  const m = from.match(/^\\s*\"?([^<\"]+)\"?\\s*</);\n  const raw = m ? m[1] : from.split('@')[0];\n  return raw.replace(/[^a-zA-Z0-9]+/g,' ').trim().split(/\\s+/).slice(0,3).join('-') || 'Emisor';\n}\n\nconst out = [];\nfor (const item of $input.all()) {\n  const j = item.json || {};\n  const body = norm((j.textPlain || '') + '\\n' + (j.snippet || '') + '\\n' + (j.subject || ''));\n  const hasKeyword = keywords.some(k => body.includes(norm(k)));\n  const hasBinary = item.binary && Object.keys(item.binary).length > 0;\n  if (!hasKeyword || !hasBinary) continue;\n\n  const d = new Date();\n  const dd = String(d.getDate()).padStart(2,'0');\n  const mm = String(d.getMonth()+1).padStart(2,'0');\n  const yyyy = d.getFullYear();\n  const emisor = emitter(j.from || 'Emisor');\n  const folderName = `${emisor}-${dd}-${mm}-${yyyy}`;\n\n  out.push({\n    json: {\n      ...j,\n      ok: true,\n      emisor,\n      folderName,\n      targetParentFolderId: '1veOwTVWUKjs-w0DUU_GY8n8owmbUxyA-'\n    },\n    binary: item.binary\n  });\n}\n\nreturn out;"
+      },
+      "id": "cbf6ae50-6239-4efb-9bfd-19f658aaac7f",
+      "name": "Filtrar facturas por body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "79270ac7-010b-43ce-b49e-8bcc2f1f6b5f",
+      "name": "Es factura?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1010,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "folder",
+        "name": "={{ $json.folderName }}",
+        "parentFolderId": "={{ $json.targetParentFolderId }}",
+        "options": {}
+      },
+      "id": "2150e5d7-e740-4cbc-a329-4ead0d194a19",
+      "name": "Crear carpeta destino",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1230,
+        180
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $('Filtrar facturas por body').item;\nconst folder = $json;\nconst binaries = source.binary || {};\nconst out = [];\nfor (const [k,v] of Object.entries(binaries)) {\n  out.push({\n    json: {\n      folderId: folder.id || folder.fileId || folder.folderId,\n      fileName: v.fileName || `adjunto-${k}`\n    },\n    binary: { data: v }\n  });\n}\nreturn out;"
+      },
+      "id": "6e185109-6ce4-4fc9-ae8d-ba70e38940eb",
+      "name": "Preparar adjuntos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "name": "={{ $json.fileName }}",
+        "parentFolderId": "={{ $json.folderId }}",
+        "options": {}
+      },
+      "id": "77eab053-2685-44cb-abcd-5324e11ee0d8",
+      "name": "Subir adjunto a Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1670,
+        180
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jt9zaytK5uu24AB1",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "43fcf6cb-7a79-4efc-a431-2bc94b543d27",
+      "name": "Fin",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        180
+      ]
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-13T02:36:09.619Z",
+      "createdAt": "2026-03-13T02:36:09.619Z",
+      "role": "workflow:owner",
+      "workflowId": "piBMfhIwLslThHGI",
+      "projectId": "E56trdgxInvxGA6Y",
+      "project": {
+        "updatedAt": "2026-01-12T22:50:30.978Z",
+        "createdAt": "2026-01-12T21:05:23.614Z",
+        "id": "E56trdgxInvxGA6Y",
+        "name": "jorge Patino <jorgeptn@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-12T21:05:23.619Z",
+            "createdAt": "2026-01-12T21:05:23.619Z",
+            "userId": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+            "projectId": "E56trdgxInvxGA6Y",
+            "user": {
+              "updatedAt": "2026-03-14T00:11:37.000Z",
+              "createdAt": "2026-01-12T21:05:23.596Z",
+              "id": "ce4fbb9e-6d48-4da0-921f-63a06934a787",
+              "email": "jorgeptn@gmail.com",
+              "firstName": "jorge",
+              "lastName": "Patino",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2026-01-12T22:51:32.120Z",
+                "personalization_survey_n8n_version": "2.2.5",
+                "companyIndustryExtended": [
+                  "physical-retail-or-services"
+                ],
+                "companySize": "<20",
+                "companyType": "other",
+                "role": "customer-support",
+                "reportedSource": "google"
+              },
+              "settings": {
+                "firstSuccessfulWorkflowId": "zQ-8lqPtwSRNSIrY09cbr",
+                "userActivated": true,
+                "userActivatedAt": 1768360374572,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1772502543338
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-03-13",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-13T02:39:35.000Z",
+  "versionCounter": 5,
+  "versionId": "748de48c-a6fc-47e6-815a-4ced1524bd3b"
+}
